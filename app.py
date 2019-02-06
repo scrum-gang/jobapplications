@@ -1,6 +1,7 @@
 from flask import Flask
+from sqlalchemy import create_engine
 
-
+#engine = create_engine('postgresql://localhost:5432/jobapplications')
 # app initialization
 app = Flask(__name__)
 app.debug = True
