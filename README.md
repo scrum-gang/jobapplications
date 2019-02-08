@@ -21,6 +21,7 @@ To run the microservice, you need to...
 
 ## Database
 
+### Setting Up
 Once inside the virtual environment, make sure to have postgresql installed on your computer.
 Create a database named `jobapplications` and grant any of your psql users permissions to it.
 
@@ -33,8 +34,17 @@ Next, you'll want to set your environment variables to contain the database log-
 * `export PSQL_USER="potato"`
 * `export PSQL_PW="potato_pw"`
 
-Finally, you can create the tables in your database using the `setup.py` script. Note that this
-script is temporary and will be replaced with proper migrations using `alembic` shortly!
+Finally, you can create the tables in your database using the `setup.py` script.
 * `python setup.py`
 
 You now have an instance of the database with the correct tables and columns! :tada:
+
+### Upgrading
+When modifying the database, alembic is in place to handle data migrations from an old schema to a new one. Alembic handles data migrations automatically, so it is sufficient to perform the following commands:
+* Create the directory `alembic/versions` if it does not exist yet.
+* `alembic revision -m <your message here>` to create a baseline migration (if the folder `alembic/versions` is empty and no previous migrations exist)
+* `alembic upgrade head` to upgrade the database to the newest revision
+* `alembic revision --autogenerate -m <your message here>` to auto generate a new version
+
+Note that sometimes Alembic auto generates the upgrade scripts with the table deletions in the wrong order. If you see an error message containing `table <...> depends on <...>`, simply modify the python script in `alembic/versions` for your current migration to ensure it is deleting tables with the most dependencies last. 
+
