@@ -33,8 +33,6 @@ def test_db_is_created():
 def test_db_can_add_season(test_teardown):
     """
     Ensures that it is possible to add a season inside the database
-    This test does not have a teardown simply because the data
-    added to the database is reused at later steps
     """
     season_name = "Fall"
     season = Season(name=season_name)
