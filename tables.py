@@ -5,7 +5,7 @@ class Application(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     date = db.Column(db.DateTime)
     user_id = db.Column(db.Integer)
-    inhouse = db.Column(db.Boolean)
+    is_inhouse_posting = db.Column(db.Boolean)
     season = db.Column(db.String(256), db.ForeignKey('seasons.name'))
     status = db.Column(db.String(256))
 
