@@ -1,23 +1,46 @@
-class Application():
+from utils import db
+
+class Application(db.Model):
     __tablename__ = "applications"
-    # TODO: implement
-    pass
+    id = db.Column(db.Integer, primary_key=True)
+    date = db.Column(db.DateTime)
+    user_id = db.Column(db.Integer)
+    is_inhouse_posting = db.Column(db.Boolean)
+    season = db.Column(db.String(256), db.ForeignKey('seasons.name'))
+    status = db.Column(db.String(256))
+
+    inhouse = db.relationship("Inhouse", backref="applications", lazy=True)
+    external = db.relationship("External", backref="applications", lazy=True)
+    def __repr__(self):
+        return '<Application %r>' % self.id
 
 
-class Inhouse():
+class Inhouse(db.Model):
     __tablename__ = "inhouse"
-    # TODO: implement
-    pass
+    id = db.Column(db.Integer, primary_key=True)
+    application_id = db.Column(db.Integer, db.ForeignKey('applications.id'))
+    job_id = db.Column(db.Integer)
+    resume = db.Column(db.String(256))
+    comments = db.Column(db.String(256))
 
+    def __repr__(self):
+        return '<Inhouse Application %r>' % self.id
 
-class External():
+class External(db.Model):
     __tablename__ = "external"
-    # TODO: implement
-    pass
+    id = db.Column(db.Integer, primary_key=True)
+    application_id = db.Column(db.Integer, db.ForeignKey('applications.id'))
+    job_url = db.Column(db.String(256))
+    job_title = db.Column(db.String(256))
 
+    def __repr__(self):
+        return '<External Application %r>' % self.id
 
-class Season():
+class Season(db.Model):
     __tablename__ = "seasons"
-    # TODO: implement
-    pass
+    name = db.Column(db.String, primary_key=True)
+    
+    application = db.relationship("Application", backref="seasons", lazy=True)
+    def __repr__(self):
+        return '<Season %r>' % self.name
 
