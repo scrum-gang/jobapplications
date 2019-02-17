@@ -109,11 +109,3 @@ def test_db_can_add_external_application():
     assert external_application_from_db is not None
     assert external_application_from_db.job_url is job_url
     assert external_application_from_db.job_title is job_title
-
-
-@pytest.fixture()
-def test_teardown():
-    Inhouse.query.delete()
-    External.query.delete()
-    Application.query.delete()
-    Season.query.delete()
