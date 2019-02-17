@@ -1,8 +1,8 @@
 from flask import Flask, request
 from sqlalchemy import create_engine
 
-from external import apply_external_posting, update_status_external_posting, get_applications_external, \
-                     get_applications_internal
+from external import apply_external_posting, update_status_external_posting, get_applications_external
+from internal import get_applications_internal
 from utils import app
 
 
@@ -52,7 +52,7 @@ def get_external(user_id):
 
 
 @app.route('/get-internal/<job_id>')
-def get_external(job_id):
+def get_internal(job_id):
   """
   Gets all job postings to an internal job
   """
