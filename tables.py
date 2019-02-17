@@ -29,6 +29,10 @@ class Inhouse(db.Model):
 
     def __repr__(self):
         return '<Inhouse Application %r>' % self.id
+    
+    def to_dict(self):
+        return { c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs }
+
 
 class External(db.Model):
     __tablename__ = "external"
