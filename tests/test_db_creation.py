@@ -52,9 +52,9 @@ def test_db_can_add_applications():
     time.sleep(1)
     creation_date_external = datetime.now()
     inhouse_application = Application(date=creation_date_inhouse, user_id=user_id, season="Fall",
-                              is_inhouse_posting=True, status=status)
+                                      is_inhouse_posting=True, status=status)
     external_application = Application(date=creation_date_external, user_id=user_id, season="Fall",
-                              is_inhouse_posting=False, status=status)
+                                       is_inhouse_posting=False, status=status)
 
     db.session.add(inhouse_application)
     db.session.add(external_application)
