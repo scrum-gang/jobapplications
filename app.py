@@ -44,6 +44,9 @@ def update_status_external():
 
 @app.route('/get-external/<user_id>')
 def get_external(user_id):
+  """
+  Gets external job postings for a specific user.
+  """
   return get_applications_external(user_id)
 
 
