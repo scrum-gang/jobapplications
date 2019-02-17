@@ -1,4 +1,6 @@
 # Job Applications
+[![Build Status](https://travis-ci.org/scrum-gang/jobapplications.svg?branch=master)](https://travis-ci.org/scrum-gang/jobapplications)
+
 Repository for the microservices which enables users to track their job applications.
 
 Job applications can either come from a user submitting the application form of a in-house posting, or simply by tracking an external posting via our platform.
