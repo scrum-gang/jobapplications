@@ -78,8 +78,8 @@ def update_status_internal():
   return update_status_internal(application_id, new_status)
 
 
-@app.route('/get/user/<user_id>')
-@app.route('/get/user/<user_id>/<application_type>')
+@app.route('/applications/user/<user_id>')
+@app.route('/applications/user/<user_id>/<application_type>')
 def get_application(user_id, application_type=None):
   """
   Gets job postings for a specific user.
@@ -93,7 +93,7 @@ def get_application(user_id, application_type=None):
   return applications_external + applications_internal
 
 
-@app.route('/get/job/<job_id>')
+@app.route('/applications/job/<job_id>')
 def get_internal(job_id):
   """
   Gets all job postings to an internal job
