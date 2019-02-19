@@ -5,34 +5,30 @@ from datetime import datetime
 from utils import db
 import json
 
-from tables import Season, Application, External
+from tables import Application, External
 
 
-def apply_external_posting(user_id, job_url, job_title, job_season):
+def apply_external_posting(user_id, url, position, company, resume, date_posted, deadline):
     """
     Applies to an external job posting
 
     Arguments:
     user_id: User applying for the job
-    job_url: URL for the job they are applying to
-    job_title: Title of the job they are applying to
-    job_season: Season during which the job takes place
+    url: URL for the job they are applying to
+    position: Position of the job they are applying to
+    company: Company they are applying to
+    date_posted: When the job posting was created
+    deadline: Deadline for the job
     """
-    if not job_url or not job_title or not job_season:
-        raise Exception("You must provide a job URL, job title and job season.")
-
-    season = Season.query.filter_by(name=job_season).first()
-    if not season:
-        season = Season(name=job_season)
-        db.session.add(season)
+    if not url or not position or not company:
+        raise Exception("You must provide a job URL, position and company.")
 
     application = Application(date=str(datetime.now()), user_id=user_id,
-                              is_inhouse_posting=False, season=season.name,
-                              status="applied")
+                              is_inhouse_posting=False, status="applied", resume=resume)
     db.session.add(application)
 
-    external_application = External(application_id=application.id, job_url=job_url,
-                                    job_title=job_title) 
+    external_application = External(application_id=application.id, url=url, position=position,
+                                    company=company, date_posted=date_posted, deadline=deadline)
     db.session.add(external_application)
     db.session.commit()
     user_applications = Application.query.filter_by(user_id=user_id).all()
