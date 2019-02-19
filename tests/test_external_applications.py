@@ -5,7 +5,7 @@ import os
 import sys
 
 sys.path.insert(0, os.getcwd())
-from external import apply_external_posting, update_status_external_posting, get_applications_external
+from external import apply_external, update_status_external, get_applications_external
 
 resume = "/potato/IamAPotato"
 url, position, company = "url.com", "potato", "poutine factory"
@@ -20,25 +20,7 @@ def test__apply_with_missing_info(test_teardown):
     url, position, company = "", "", ""
 
     with pytest.raises(Exception) as e:
-        apply_external_posting(user_id, url, position, company, resume, date_posted, deadline)
-
-
-def test__apply_with_existing_season(test_teardown):
-    """
-    Success scenario: It shouldn't matter if the season already exists or not.
-    """
-    user_id = 1
-    
-    # We create an application in the DB
-    apply_external_posting(user_id, url, position, company, resume, date_posted, deadline)
-
-    # We create another application in the same job season
-    applications = json.loads(apply_external_posting(user_id, url, position, company, resume,
-                                                     date_posted, deadline))
-
-    assert len(applications) == 2
-    assert applications[0]['resume'] == applications[1]['resume']
-    assert applications[0]['status'] == applications[1]['status'] == "applied"
+        apply_external(user_id, url, position, company, resume, date_posted, deadline)
 
 
 def test__update_status_empty_string(test_teardown):
@@ -48,13 +30,13 @@ def test__update_status_empty_string(test_teardown):
     user_id = 1
 
     # We create an application in the DB
-    applications = json.loads(apply_external_posting(user_id, url, position, company, resume,
+    applications = json.loads(apply_external(user_id, url, position, company, resume,
                                                      date_posted, deadline))
 
     # We update the status of this application
     new_status = ""
     with pytest.raises(Exception) as e:
-        update_status_external_posting(applications[0]['id'], new_status)
+        update_status_external(applications[0]['id'], new_status)
 
 
 def test__apply(test_teardown):
@@ -64,16 +46,17 @@ def test__apply(test_teardown):
     user_id = 1
     
     # We create an application in the DB
-    apply_external_posting(user_id, url, position, company, resume,
-                           date_posted, deadline)
+    apply_external(user_id, url, position, company, resume, date_posted, deadline)
     applications = json.loads(get_applications_external(user_id))
 
+    assert len(applications) == 1
     assert applications[0]['user_id'] == user_id
     assert applications[0]['is_inhouse_posting'] == False
     assert applications[0]['url'] == url
     assert applications[0]['position'] == position
     assert applications[0]['company'] == company
     assert applications[0]['resume'] == resume
+    assert applications[0]['application_id'] >= 0
 
 
 def test__update_status(test_teardown):
@@ -84,9 +67,9 @@ def test__update_status(test_teardown):
     new_status = "new!"
 
     # We create an application in the DB
-    applications = json.loads(apply_external_posting(user_id, url, position, company, resume,
+    applications = json.loads(apply_external(user_id, url, position, company, resume,
                                                      date_posted, deadline))
-    updated_applications = json.loads(update_status_external_posting(applications[0]['id'], new_status))
+    updated_applications = json.loads(update_status_external(applications[0]['id'], new_status))
 
     assert applications[0]['status'] != new_status
     assert updated_applications[0]['status'] == new_status
