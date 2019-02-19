@@ -1,6 +1,5 @@
 from datetime import datetime
 import pytest
-import json
 import os
 import sys
 
@@ -30,8 +29,8 @@ def test__update_status_empty_string(test_teardown):
     user_id = 1
 
     # We create an application in the DB
-    applications = json.loads(apply_external(user_id, url, position, company, resume,
-                                                     date_posted, deadline))
+    applications = apply_external(user_id, url, position, company, resume,
+                                  date_posted, deadline)
 
     # We update the status of this application
     new_status = ""
@@ -47,7 +46,7 @@ def test__apply(test_teardown):
     
     # We create an application in the DB
     apply_external(user_id, url, position, company, resume, date_posted, deadline)
-    applications = json.loads(get_applications_external(user_id))
+    applications = get_applications_external(user_id)
 
     assert len(applications) == 1
     assert applications[0]['user_id'] == user_id
@@ -67,9 +66,9 @@ def test__update_status(test_teardown):
     new_status = "new!"
 
     # We create an application in the DB
-    applications = json.loads(apply_external(user_id, url, position, company, resume,
-                                                     date_posted, deadline))
-    updated_applications = json.loads(update_status_external(applications[0]['id'], new_status))
+    applications = apply_external(user_id, url, position, company, resume,
+                                  date_posted, deadline)
+    updated_applications = update_status_external(applications[0]['id'], new_status)
 
     assert applications[0]['status'] != new_status
     assert updated_applications[0]['status'] == new_status

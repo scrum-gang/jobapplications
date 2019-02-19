@@ -3,7 +3,6 @@ Contains functionalities to apply to external job postings.
 """
 from datetime import datetime
 from utils import db
-import json
 
 from tables import Application, External
 
@@ -36,7 +35,7 @@ def apply_external(user_id, url, position, company, resume, date_posted, deadlin
     db.session.commit()
     user_applications = Application.query.filter_by(user_id=user_id).all()
 
-    return json.dumps([application.to_dict() for application in user_applications])
+    return [application.to_dict() for application in user_applications]
 
 
 def update_status_external(application_id, new_status):
@@ -53,7 +52,7 @@ def update_status_external(application_id, new_status):
     application = Application.query.filter_by(id=application_id).first()
     application.status = new_status
     user_applications = Application.query.filter_by(user_id=application.user_id).all()
-    return json.dumps([application.to_dict() for application in user_applications])
+    return [application.to_dict() for application in user_applications]
 
 
 def get_applications_external(user_id):
@@ -68,4 +67,4 @@ def get_applications_external(user_id):
     output = [{key: application.to_dict()[key] if key in application.to_dict() else external.to_dict()[key] for key in application.to_dict().keys() ^ external.to_dict().keys()}
               for application, external in applications]
 
-    return json.dumps(output)
+    return output

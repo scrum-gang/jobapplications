@@ -3,7 +3,6 @@ Contains functionalities to apply to internal job postings.
 """
 from datetime import datetime
 from utils import db
-import json
 
 from tables import Application, Inhouse
 
@@ -31,7 +30,7 @@ def apply_internal(user_id, job_id, resume):
     db.session.commit()
 
     user_applications = Application.query.filter_by(user_id=user_id).all()
-    return json.dumps([application.to_dict() for application in user_applications])
+    return [application.to_dict() for application in user_applications]
 
 
 def update_status_internal(application_id, new_status):
@@ -48,7 +47,7 @@ def update_status_internal(application_id, new_status):
     application.status = new_status
 
     user_applications = Application.query.filter_by(user_id=application.user_id).all()
-    return json.dumps([application.to_dict() for application in user_applications])
+    return [application.to_dict() for application in user_applications]
 
 
 def get_applications_internal(identifier, type_of_id):
@@ -76,4 +75,4 @@ def get_applications_internal(identifier, type_of_id):
     output = [{key: application.to_dict()[key] if key in application.to_dict() else inhouse.to_dict()[key] for key in application.to_dict().keys() ^ inhouse.to_dict().keys()}
               for application, inhouse in applications]
 
-    return json.dumps(output)
+    return output

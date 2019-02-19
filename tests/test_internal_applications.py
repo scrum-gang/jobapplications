@@ -1,5 +1,4 @@
 import pytest
-import json
 import os
 import sys
 from datetime import datetime
@@ -31,7 +30,7 @@ def test__update_status_empty_string(test_teardown):
     user_id = 1
 
     # We create an application in the DB
-    applications = json.loads(apply_internal(user_id, job_id, resume))
+    applications = apply_internal(user_id, job_id, resume)
 
     # We update the status of this application
     new_status = ""
@@ -45,7 +44,7 @@ def test__apply(test_teardown):
 
     This test also verifies querying applications by Job & User ID.
     """
-    no_applications = json.loads(get_applications_internal(job_id, 'job'))
+    no_applications = get_applications_internal(job_id, 'job')
     assert len(no_applications) == 0
 
     resume = "/resumes/resume.pdf"
@@ -55,8 +54,8 @@ def test__apply(test_teardown):
     assert new_job_id != job_id
     apply_internal(user_id, new_job_id, resume)
 
-    applications_by_job = json.loads(get_applications_internal(new_job_id, 'job'))
-    applications_by_user = json.loads(get_applications_internal(user_id, 'user'))
+    applications_by_job = get_applications_internal(new_job_id, 'job')
+    applications_by_user = get_applications_internal(user_id, 'user')
 
     print(applications_by_user)
     assert len(applications_by_user) == 2
@@ -77,8 +76,8 @@ def test__update_status(test_teardown):
     new_status = "new!"
 
     # We create an application in the DB
-    applications = json.loads(apply_internal(user_id, job_id, resume))
-    updated_applications = json.loads(update_status_internal(applications[0]['id'], new_status))
+    applications = apply_internal(user_id, job_id, resume)
+    updated_applications = update_status_internal(applications[0]['id'], new_status)
 
     assert applications[0]['status'] != new_status
     assert updated_applications[0]['status'] == new_status
