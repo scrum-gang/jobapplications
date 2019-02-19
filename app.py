@@ -85,7 +85,6 @@ def get_application_by_user_endpoint(user_id, application_type=None):
   Gets job postings for a specific user.
   """
   applications_external, applications_internal = [], []
-  print(application_type)
   if application_type == "external" or not application_type:
     applications_external = get_applications_external(user_id)
   if application_type == "internal" or not application_type:
