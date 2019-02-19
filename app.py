@@ -12,7 +12,7 @@ def index():
 
 
 @app.route('/apply/external', methods=['POST'])
-def apply_external():
+def apply_external_endpoint():
   """
   Enables user to apply to an external job posting.
 
@@ -33,7 +33,7 @@ def apply_external():
 
 
 @app.route('/apply/internal', methods=['POST'])
-def apply_internal():
+def apply_internal_endpoint():
   """
   Enables user to apply to an external job posting.
 
@@ -45,11 +45,11 @@ def apply_internal():
   content = request.json
   job_id = content['job_id']
   user_id, resume = content['user_id'], content['resume']
-  return jsonify(apply_external(user_id, job_id, resume))
+  return jsonify(apply_internal(user_id, job_id, resume))
 
 
 @app.route('/update-status/external', methods=['POST'])
-def update_status_external():
+def update_status_external_endpoint():
   """
   Updates the status of an external job posting
 
@@ -64,7 +64,7 @@ def update_status_external():
 
 
 @app.route('/update-status/internal', methods=['POST'])
-def update_status_internal():
+def update_status_internal_endpoint():
   """
   Updates the status of an external job posting
 
@@ -80,7 +80,7 @@ def update_status_internal():
 
 @app.route('/applications/user/<user_id>')
 @app.route('/applications/user/<user_id>/<application_type>')
-def get_application(user_id, application_type=None):
+def get_application_by_user_endpoint(user_id, application_type=None):
   """
   Gets job postings for a specific user.
   """
@@ -94,7 +94,7 @@ def get_application(user_id, application_type=None):
 
 
 @app.route('/applications/job/<job_id>')
-def get_internal(job_id):
+def get_application_by_job_endpoint(job_id):
   """
   Gets all job postings to an internal job
   """
