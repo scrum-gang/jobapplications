@@ -71,7 +71,7 @@ def test_db_can_add_inhouse_application():
 
     inhouse_application_from_db = Inhouse.query.filter_by(application_id=job_application.id).first()
     assert inhouse_application_from_db is not None
-    assert job_application.resume is resume
+    assert job_application.resume == resume
     assert inhouse_application_from_db.job_id is job_id
 
 
