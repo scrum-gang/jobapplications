@@ -26,10 +26,11 @@ def apply_external_endpoint():
   - `user_id`: ID of the user applying
   """
   content = request.json
-  url, position, company = content['url'], content['position'], content['company']
-  date_posted, deadline = content['date_posted'], content['deadline']
-  user_id, resume = content['user_id'], content['resume']
-  return jsonify(apply_external(user_id, url, position, company, resume, date_posted, deadline))
+  url, position, company = content.get("url", ""), content.get('position', ""), content.get('company', "")
+  date_posted, deadline = content.get('date_posted', ""), content.get('deadline', "")
+  user_id, resume, status = content['user_id'], content.get('resume', ""), content.get("status", "Applied")
+  return jsonify(apply_external(user_id, url, position, company, resume,
+                                date_posted, deadline, status=status))
 
 
 @app.route('/apply/internal', methods=['POST'])
