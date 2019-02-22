@@ -17,9 +17,9 @@ def get_application_by_id(application_id):
     if not application:
         return {"status": "Application not found!"}
     if application.is_inhouse_posting:
-        app_data, type_data = db.session.query(Application, Internal) \
+        app_data, type_data = db.session.query(Application, Inhouse) \
                                 .filter(Application.id == application_id) \
-                                .filter(Internal.application_id == Application.id) \
+                                .filter(Inhouse.application_id == Application.id) \
                                 .first()
     else:
         app_data, type_data = db.session.query(Application, External) \
