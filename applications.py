@@ -14,15 +14,14 @@ def get_application_by_id(application_id):
     TODO [aungur]: This should probably be refactored ...
     """
     application = Application.query.filter_by(id=application_id).first()
-    print(application)
+    if not application:
+        return {"status": "Application not found!"}
     if application.is_inhouse_posting:
-        print("?")
         app_data, type_data = db.session.query(Application, Internal) \
                                 .filter(Application.id == application_id) \
                                 .filter(Internal.application_id == Application.id) \
                                 .first()
     else:
-        print("!")
         app_data, type_data = db.session.query(Application, External) \
                                 .filter(Application.id == application_id) \
                                 .filter(External.application_id == Application.id) \
