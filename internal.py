@@ -1,5 +1,5 @@
 """
-Contains functionalities to apply to internal job postings.
+Contains functionalities to apply to internal job applications.
 """
 from datetime import datetime
 from utils import db

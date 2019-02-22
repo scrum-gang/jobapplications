@@ -14,10 +14,9 @@ db_name = os.environ.get("PSQL_USER", "")
 db_pw = os.environ.get("PSQL_PW", "")
 db_uri = f'postgresql://{db_name}:{db_pw}@localhost/jobapplications'
 heroku_uri = os.environ.get("HEROKU_POSTGRESQL_AMBER_URL", "")
-app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
+app.config['SQLALCHEMY_DATABASE_URI'] = heroku_uri#db_uri
 app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN'] = True
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 heroku = Heroku(app)
 
 db = SQLAlchemy(app)
-

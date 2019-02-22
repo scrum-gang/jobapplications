@@ -3,6 +3,7 @@ from sqlalchemy import create_engine
 
 from external import apply_external, update_status_external, get_applications_external
 from internal import apply_internal, update_status_internal, get_applications_internal
+from applications import get_application_by_id
 from utils import app
 
 
@@ -99,6 +100,14 @@ def get_application_by_job_endpoint(job_id):
   Gets all job postings to an internal job
   """
   return jsonify(get_applications_internal(job_id, 'job'))
+
+
+@app.route('/applications/<application_id>')
+def get_application(application_id):
+  """
+  Gets a single application by its unique ID
+  """
+  return jsonify(get_application_by_id(application_id))
 
 
 if __name__ == '__main__':
