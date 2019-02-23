@@ -2,8 +2,9 @@ from flask import Flask
 from flask_heroku import Heroku
 from flask_sqlalchemy import SQLAlchemy
 import os
+import requests
 
-
+auth_base_url = "https://jobhub-authentication-staging.herokuapp.com"
 # app initialization
 app = Flask(__name__)
 app.debug = True
@@ -20,3 +21,20 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 heroku = Heroku(app)
 
 db = SQLAlchemy(app)
+
+
+def validate_authentication(content, user=None, admin=False):
+    if 'auth' not in content:
+        return False
+    headers = {'content-type': 'application/json', 'Authorization': f'Bearer {content['auth']}'}
+    response = requests.get(f"{auth_base_url}/users/self", headers=headers)
+    if 'verified' not in response:
+        return False
+
+    if admin and response['type'] != 'recruiter':
+        return False
+
+    if user:
+        return response['_id'] == user
+    else:
+        return response['verified']
