@@ -26,7 +26,7 @@ db = SQLAlchemy(app)
 def validate_authentication(content, user=None, admin=False):
     if 'auth' not in content:
         return False
-    headers = {'content-type': 'application/json', 'Authorization': f'Bearer {content['auth']}'}
+    headers = {'content-type': 'application/json', 'Authorization': f"Bearer {content['auth']}"}
     response = requests.get(f"{auth_base_url}/users/self", headers=headers)
     if 'verified' not in response:
         return False
