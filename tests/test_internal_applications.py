@@ -8,7 +8,7 @@ from utils import db
 from tables import Application, Inhouse
 from internal import get_applications_internal, apply_internal, update_status_internal
 
-user_id = 1
+user_id = "someid123"
 job_id = 0
 resume = "/potato/resume.pdf"
 
@@ -27,7 +27,7 @@ def test__update_status_empty_string(test_teardown):
     """
     Failure scenario: Empty status should give an error
     """
-    user_id = 1
+    user_id = "someid456"
 
     # We create an application in the DB
     applications = apply_internal(user_id, job_id, resume)
@@ -57,7 +57,6 @@ def test__apply(test_teardown):
     applications_by_job = get_applications_internal(new_job_id, 'job')
     applications_by_user = get_applications_internal(user_id, 'user')
 
-    print(applications_by_user)
     assert len(applications_by_user) == 2
     assert len(applications_by_job) == 1
     assert applications_by_user[0]['is_inhouse_posting'] and applications_by_job[0]['is_inhouse_posting']
@@ -72,7 +71,7 @@ def test__update_status(test_teardown):
     """
     Basic test for resetting the status
     """
-    user_id = 1
+    user_id = "someid456"
     new_status = "new!"
 
     # We create an application in the DB

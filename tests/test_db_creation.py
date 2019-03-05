@@ -9,7 +9,7 @@ from utils import db
 from tables import Application, Inhouse, External
 
 # Global Variables
-user_id = 0
+user_id = "someid123"
 status = "Applied"
 resume = "/this/resume/"
 

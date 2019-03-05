@@ -6,6 +6,7 @@ import sys
 sys.path.insert(0, os.getcwd())
 from external import apply_external, update_status_external, get_applications_external
 
+user_id = "someid123"
 resume = "/potato/IamAPotato"
 url, position, company = "url.com", "potato", "poutine factory"
 date_posted, deadline = str(datetime.now()), str(datetime.now())
@@ -15,7 +16,7 @@ def test__apply_with_missing_info(test_teardown):
     """
     Failure scenario: Missing information should throw errors.
     """
-    user_id = 0
+    user_id = "someid456"
     url, position, company = "", "", ""
 
     with pytest.raises(Exception) as e:
@@ -26,7 +27,6 @@ def test__update_status_empty_string(test_teardown):
     """
     Failure scenario: Empty status should give an error
     """
-    user_id = 1
 
     # We create an application in the DB
     applications = apply_external(user_id, url, position, company, resume,
@@ -42,7 +42,6 @@ def test__apply(test_teardown):
     """
     Regular scenario for applying to external postings
     """
-    user_id = 1
     
     # We create an application in the DB
     apply_external(user_id, url, position, company, resume, date_posted, deadline)
@@ -62,7 +61,6 @@ def test__update_status(test_teardown):
     """
     Regular scenario for updating a status
     """
-    user_id = 1
     new_status = "new!"
 
     # We create an application in the DB
