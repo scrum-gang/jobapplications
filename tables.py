@@ -5,7 +5,7 @@ class Application(db.Model):
     __tablename__ = "applications"
     id = db.Column(db.Integer, primary_key=True)
     date = db.Column(db.String)
-    user_id = db.Column(db.Integer)
+    user_id = db.Column(db.String)
     is_inhouse_posting = db.Column(db.Boolean)
     status = db.Column(db.String(256))
     resume = db.Column(db.String(256))

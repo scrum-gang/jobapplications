@@ -18,8 +18,10 @@ def apply_internal(user_id, job_id, resume):
     """
     if not resume or job_id < 0 or user_id < 0:
         raise Exception("Please enter a resume name and a valid job & user id.")
-
-    # TODO [aungur]: Refactor this double call to `db.session.commit`
+    for application in Application.query.filter_by(user_id=user_id):
+        inhouse = Inhouse.query.filter_by(application_id=application.id, job_id=job_id)
+        if inhouse:
+            return [{"status": f"Already found an application for job ID {job_id} for the user {user_id}"}]
     generic_application = Application(date=str(datetime.now()), user_id=user_id, is_inhouse_posting=True,
                                       status="Applied", resume=resume)
     db.session.add(generic_application)
