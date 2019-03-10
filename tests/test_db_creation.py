@@ -6,7 +6,7 @@ import time
 sys.path.insert(0, os.getcwd())
 
 from utils import db
-from tables import Application, Inhouse, External
+from tables import Application, Inhouse, External, InterviewQuestion
 
 # Global Variables
 user_id = "someid123"
@@ -97,3 +97,37 @@ def test_db_can_add_external_application():
     assert external_application_from_db.company is company
     assert external_application_from_db.date_posted is date_posted
     assert external_application_from_db.deadline is deadline
+
+
+def test_db_can_add_interview_questions():
+    """
+    Ensures that it is possible to add interview questions to a job application,
+    regardless whether it is external or internal.
+
+    The previous two tests added applications, this one will simply add interview
+    questions mapping to the applications.
+    """
+    applications = Application.query.filter_by(user_id=user_id).all()
+    inhouse_id = None
+    external_id = None
+    inhouse_text = "How much is too much?"
+    external_text = "Two potatoes or one poutine?"
+    for application in applications:
+        if application.is_inhouse_posting:
+            inhouse_id = application.id
+        else:
+            external_id = application.id
+    assert inhouse_id is not None and external_id is not None
+
+    inhouse_question = InterviewQuestion(application_id=inhouse_id, question=inhouse_text)
+    external_question = InterviewQuestion(application_id=external_id, question=external_text)
+    db.session.add(inhouse_question)
+    db.session.add(external_question)
+
+    questions_from_db = InterviewQuestion.query.all()
+    for q in questions_from_db:
+        application = Application.query.filter_by(id=q.application_id).first()
+        if application.is_inhouse_posting:
+            assert q.question == inhouse_text
+        else:
+            assert q.question == external_text

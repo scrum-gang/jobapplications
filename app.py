@@ -3,6 +3,8 @@ from sqlalchemy import create_engine
 
 from external import apply_external, update_status_external, get_applications_external
 from internal import apply_internal, update_status_internal, get_applications_internal
+from interview import add_interview_question
+
 from applications import get_application_by_id
 from utils import app, validate_authentication
 
@@ -58,7 +60,25 @@ def apply_internal_endpoint():
   return jsonify(apply_internal(user_id, job_id, resume))
 
 
-@app.route('/update-status/external', methods=['POST'])
+@app.route('/interview/question', methods=['POST'])
+def add_interview_question_endpoint():
+  """
+  Enables user to track interview questions
+
+  Request body:
+  - `application_id`: ID of the application to which the question maps to
+  - `question`: Interview question
+  - `auth`: Authentication token
+  """
+  if not validate_authentication(content):
+    return jsonify({"status": auth_error})
+  content = request.json
+  application_id = content['application_id']
+  question = content['question']
+  return jsonify(add_interview_question(application_id, question))
+
+
+@app.route('/update-status/external', methods=['PUT'])
 def update_status_external_endpoint():
   """
   Updates the status of an external job posting
@@ -77,7 +97,7 @@ def update_status_external_endpoint():
   return jsonify(update_status_external(application_id, new_status))
 
 
-@app.route('/update-status/internal', methods=['POST'])
+@app.route('/update-status/internal', methods=['PUT'])
 def update_status_internal_endpoint():
   """
   Updates the status of an external job posting
