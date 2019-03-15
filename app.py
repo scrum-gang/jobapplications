@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 from sqlalchemy import create_engine
-
+from flask_cors import CORS
 from external import apply_external, update_status_external, get_applications_external
 from internal import apply_internal, update_status_internal, get_applications_internal
 from interview import add_interview_question
@@ -8,6 +8,7 @@ from interview import add_interview_question
 from applications import get_application_by_id
 from utils import app, validate_authentication
 
+CORS(app)
 auth_error = "You must be authenticated to perform this call."
 
 @app.route('/')
