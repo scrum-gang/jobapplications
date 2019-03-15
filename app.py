@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 from sqlalchemy import create_engine
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 from external import apply_external, update_status_external, get_applications_external
 from internal import apply_internal, update_status_internal, get_applications_internal
 from applications import get_application_by_id
@@ -10,11 +10,13 @@ CORS(app)
 auth_error = "You must be authenticated to perform this call."
 
 @app.route('/')
+@cross_origin()
 def index():
   return "<h1> Hello World! </h1>"
 
 
 @app.route('/apply/external', methods=['POST'])
+@cross_origin()
 def apply_external_endpoint():
   """
   Enables user to apply to an external job posting.
@@ -41,6 +43,7 @@ def apply_external_endpoint():
 
 
 @app.route('/apply/internal', methods=['POST'])
+@cross_origin()
 def apply_internal_endpoint():
   """
   Enables user to apply to an external job posting.
@@ -60,6 +63,7 @@ def apply_internal_endpoint():
 
 
 @app.route('/update-status/external', methods=['POST'])
+@cross_origin()
 def update_status_external_endpoint():
   """
   Updates the status of an external job posting
@@ -79,6 +83,7 @@ def update_status_external_endpoint():
 
 
 @app.route('/update-status/internal', methods=['POST'])
+@cross_origin()
 def update_status_internal_endpoint():
   """
   Updates the status of an external job posting
@@ -99,6 +104,7 @@ def update_status_internal_endpoint():
 
 @app.route('/applications/user/<user_id>')
 @app.route('/applications/user/<user_id>/<application_type>')
+@cross_origin()
 def get_application_by_user_endpoint(user_id, application_type=None):
   """
   Gets job postings for a specific user.
@@ -116,6 +122,7 @@ def get_application_by_user_endpoint(user_id, application_type=None):
 
 
 @app.route('/applications/job/<job_id>')
+@cross_origin()
 def get_application_by_job_endpoint(job_id):
   """
   Gets all job postings to an internal job
@@ -127,6 +134,7 @@ def get_application_by_job_endpoint(job_id):
 
 
 @app.route('/applications/<application_id>')
+@cross_origin()
 def get_application(application_id):
   """
   Gets a single application by its unique ID
