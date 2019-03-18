@@ -32,8 +32,8 @@ def apply_external_endpoint():
   - `auth`: Authentication token
   """
   content = request.json
-  if not validate_authentication(content):
-    return jsonify({"status": auth_error})
+  #if not validate_authentication(content):
+  #  return jsonify({"status": auth_error})
 
   url, position, company = content.get("url", ""), content.get('position', ""), content.get('company', "")
   date_posted, deadline = content.get('date_posted', ""), content.get('deadline', "")
@@ -54,8 +54,8 @@ def apply_internal_endpoint():
   - `resume`: Handy tool for applying to jobs
   - `auth`: Authentication token
   """
-  if not validate_authentication(content):
-    return jsonify({"status": auth_error})
+  #if not validate_authentication(content):
+  #  return jsonify({"status": auth_error})
   content = request.json
   job_id = content['job_id']
   user_id, resume = content['user_id'], content['resume']
@@ -73,8 +73,8 @@ def update_status_external_endpoint():
   - `new_status`: New status of the job application
   - `auth`: Authentication token
   """
-  if not validate_authentication(content):
-    return jsonify({"status": auth_error})
+  #if not validate_authentication(content):
+  #  return jsonify({"status": auth_error})
 
   content = request.json
   application_id = content['id']
@@ -93,8 +93,8 @@ def update_status_internal_endpoint():
   - `new_status`: New status of the job application
   - `auth`: Authentication token
   """
-  if not validate_authentication(content, admin=True):
-    return jsonify({"status": auth_error})
+  #if not validate_authentication(content, admin=True):
+  #  return jsonify({"status": auth_error})
 
   content = request.json
   application_id = content['id']
@@ -127,8 +127,8 @@ def get_application_by_job_endpoint(job_id):
   """
   Gets all job postings to an internal job
   """
-  if not validate_authentication(content, admin=True):
-    return jsonify({"status": auth_error})
+  #if not validate_authentication(content, admin=True):
+  #  return jsonify({"status": auth_error})
 
   return jsonify(get_applications_internal(job_id, 'job'))
 
@@ -139,8 +139,8 @@ def get_application(application_id):
   """
   Gets a single application by its unique ID
   """
-  if not validate_authentication(content, admin=True):
-    return jsonify({"status": auth_error})
+  #if not validate_authentication(content, admin=True):
+  #  return jsonify({"status": auth_error})
 
   return jsonify(get_application_by_id(application_id))
 
