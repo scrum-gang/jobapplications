@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 from sqlalchemy import create_engine
-from flask_cors import CORS
+
+from flask_cors import CORS, cross_origin
 from external import apply_external, update_status_external, get_applications_external
 from internal import apply_internal, update_status_internal, get_applications_internal
 from interview import add_interview_question
@@ -12,11 +13,13 @@ CORS(app)
 auth_error = "You must be authenticated to perform this call."
 
 @app.route('/')
+@cross_origin(origin='*',headers=['Content-Type'])
 def index():
   return "<h1> Hello World! </h1>"
 
 
 @app.route('/apply/external', methods=['POST'])
+@cross_origin(origin='*',headers=['Content-Type'])
 def apply_external_endpoint():
   """
   Enables user to apply to an external job posting.
@@ -32,8 +35,8 @@ def apply_external_endpoint():
   - `auth`: Authentication token
   """
   content = request.json
-  if not validate_authentication(content):
-    return jsonify({"status": auth_error})
+  #if not validate_authentication(content):
+  #  return jsonify({"status": auth_error})
 
   url, position, company = content.get("url", ""), content.get('position', ""), content.get('company', "")
   date_posted, deadline = content.get('date_posted', ""), content.get('deadline', "")
@@ -43,6 +46,7 @@ def apply_external_endpoint():
 
 
 @app.route('/apply/internal', methods=['POST'])
+@cross_origin(origin='*',headers=['Content-Type'])
 def apply_internal_endpoint():
   """
   Enables user to apply to an external job posting.
@@ -53,8 +57,8 @@ def apply_internal_endpoint():
   - `resume`: Handy tool for applying to jobs
   - `auth`: Authentication token
   """
-  if not validate_authentication(content):
-    return jsonify({"status": auth_error})
+  #if not validate_authentication(content):
+  #  return jsonify({"status": auth_error})
   content = request.json
   job_id = content['job_id']
   user_id, resume = content['user_id'], content['resume']
@@ -80,6 +84,7 @@ def add_interview_question_endpoint():
 
 
 @app.route('/update-status/external', methods=['PUT'])
+@cross_origin(origin='*',headers=['Content-Type'])
 def update_status_external_endpoint():
   """
   Updates the status of an external job posting
@@ -89,8 +94,8 @@ def update_status_external_endpoint():
   - `new_status`: New status of the job application
   - `auth`: Authentication token
   """
-  if not validate_authentication(content):
-    return jsonify({"status": auth_error})
+  #if not validate_authentication(content):
+  #  return jsonify({"status": auth_error})
 
   content = request.json
   application_id = content['id']
@@ -99,6 +104,7 @@ def update_status_external_endpoint():
 
 
 @app.route('/update-status/internal', methods=['PUT'])
+@cross_origin(origin='*',headers=['Content-Type'])
 def update_status_internal_endpoint():
   """
   Updates the status of an external job posting
@@ -108,8 +114,8 @@ def update_status_internal_endpoint():
   - `new_status`: New status of the job application
   - `auth`: Authentication token
   """
-  if not validate_authentication(content, admin=True):
-    return jsonify({"status": auth_error})
+  #if not validate_authentication(content, admin=True):
+  #  return jsonify({"status": auth_error})
 
   content = request.json
   application_id = content['id']
@@ -119,13 +125,14 @@ def update_status_internal_endpoint():
 
 @app.route('/applications/user/<user_id>')
 @app.route('/applications/user/<user_id>/<application_type>')
+@cross_origin(origin='*',headers=['Content-Type'])
 def get_application_by_user_endpoint(user_id, application_type=None):
   """
   Gets job postings for a specific user.
   - `auth`: Authentication token
   """
-  if not validate_authentication(content, user=user_id):
-    return jsonify({"status": auth_error})
+  #if not validate_authentication(content, user=user_id):
+  #  return jsonify({"status": auth_error})
 
   applications_external, applications_internal = [], []
   if application_type == "external" or not application_type:
@@ -136,23 +143,25 @@ def get_application_by_user_endpoint(user_id, application_type=None):
 
 
 @app.route('/applications/job/<job_id>')
+@cross_origin(origin='*',headers=['Content-Type'])
 def get_application_by_job_endpoint(job_id):
   """
   Gets all job postings to an internal job
   """
-  if not validate_authentication(content, admin=True):
-    return jsonify({"status": auth_error})
+  #if not validate_authentication(content, admin=True):
+  #  return jsonify({"status": auth_error})
 
   return jsonify(get_applications_internal(job_id, 'job'))
 
 
 @app.route('/applications/<application_id>')
+@cross_origin(origin='*',headers=['Content-Type'])
 def get_application(application_id):
   """
   Gets a single application by its unique ID
   """
-  if not validate_authentication(content, admin=True):
-    return jsonify({"status": auth_error})
+  #if not validate_authentication(content, admin=True):
+  #  return jsonify({"status": auth_error})
 
   return jsonify(get_application_by_id(application_id))
 
