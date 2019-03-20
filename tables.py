@@ -12,6 +12,7 @@ class Application(db.Model):
 
     inhouse = db.relationship("Inhouse", backref="applications", lazy=True)
     external = db.relationship("External", backref="applications", lazy=True)
+    interviewquestions = db.relationship("InterviewQuestion", backref="applications", lazy=True)
     def __repr__(self):
         return '<Application %r>' % self.id
     
@@ -44,6 +45,19 @@ class External(db.Model):
 
     def __repr__(self):
         return '<External Application %r>' % self.id
+
+    def to_dict(self):
+        return { c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs }
+
+
+class InterviewQuestion(db.Model):
+    __tablename__ = "interviewquestions"
+    id = db.Column(db.Integer, primary_key=True)
+    application_id = db.Column(db.Integer, db.ForeignKey('applications.id'))
+    question = db.Column(db.String(256))
+
+    def __repr__(self):
+        return '<Interview Question %r' % self.Question
 
     def to_dict(self):
         return { c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs }
