@@ -78,3 +78,20 @@ def get_applications_internal(identifier, type_of_id):
               for application, inhouse in applications]
 
     return output
+
+
+def withdraw_application_internal(application_id):
+    """
+    Deletes a user's application.
+    """
+    if not application_id:
+        return {"status": "No application ID provided."}
+    application = Application.query.filter_by(id=application_id).first()
+    inhouse = Inhouse.query.filter_by(application_id=application_id).first()
+    if not application:
+        return {"status": "No application found."}
+    db.session.delete(inhouse)
+    db.session.delete(application)
+    db.session.commit()
+    return {"status": "success"}
+

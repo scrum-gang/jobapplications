@@ -70,3 +70,19 @@ def get_applications_external(user_id):
               for application, external in applications]
 
     return output
+
+
+def withdraw_application_external(application_id):
+    """
+    Deletes a user's application.
+    """
+    if not application_id:
+        return {"status": "No application ID provided."}
+    application = Application.query.filter_by(id=application_id).first()
+    external = External.query.filter_by(application_id=application_id).first()
+    if not application:
+        return {"status": "No application found."}
+    db.session.delete(external)
+    db.session.delete(application)
+    db.session.commit()
+    return {"status": "success"}

@@ -6,7 +6,7 @@ from datetime import datetime
 sys.path.insert(0, os.getcwd())
 from utils import db
 from tables import Application, Inhouse
-from internal import get_applications_internal, apply_internal, update_status_internal
+from internal import get_applications_internal, apply_internal, update_status_internal, withdraw_application_internal
 
 user_id = "someid123"
 job_id = 0
@@ -81,3 +81,21 @@ def test__update_status(test_teardown):
     assert applications[0]['status'] != new_status
     assert updated_applications[0]['status'] == new_status
     assert updated_applications[0]['id'] == applications[0]['id']
+
+
+def test__withdraw(test_teardown):
+    """
+    Basic test for removing applications
+    """
+    user_id = "someid456"
+
+    # We create an application in the DB
+    applications = apply_internal(user_id, job_id, resume)
+    applications_by_user = get_applications_internal(user_id, 'user')
+    assert len(applications_by_user) == 1
+
+    # We delete the application
+    withdraw_application_internal(applications_by_user[0]['application_id'])
+    applications_by_user = get_applications_internal(user_id, 'user')
+    assert len(applications_by_user) == 0
+

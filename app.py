@@ -1,8 +1,8 @@
 from flask import Flask, request, jsonify
 from sqlalchemy import create_engine
 from flask_cors import CORS, cross_origin
-from external import apply_external, update_status_external, get_applications_external
-from internal import apply_internal, update_status_internal, get_applications_internal
+from external import apply_external, update_status_external, get_applications_external, withdraw_application_external
+from internal import apply_internal, update_status_internal, get_applications_internal, withdraw_application_internal
 from applications import get_application_by_id
 from utils import app, validate_authentication
 
@@ -143,6 +143,48 @@ def get_application(application_id):
   #  return jsonify({"status": auth_error})
 
   return jsonify(get_application_by_id(application_id))
+
+
+@app.route('/withdraw/internal', methods=['DELETE'])
+@cross_origin(origin='*',headers=['Content-Type'])
+def withdraw_internal_application_endpoint():
+  """
+  Withdraws an application to an internal posting
+
+  Request body:
+  - `id`: Job application ID
+  - `auth`: Authentication token
+  """
+  #if not validate_authentication(content, admin=True):
+  #  return jsonify({"status": auth_error})
+
+  content = request.json
+  if 'id' not in content:
+    return jsonify({"status": "You need to provide a job application id."})
+
+  application_id = content['id']
+  return jsonify(withdraw_application_internal(application_id))
+
+
+@app.route('/withdraw/internal', methods=['DELETE'])
+@cross_origin(origin='*',headers=['Content-Type'])
+def withdraw_external_application_endpoint():
+  """
+  Withdraws an application to an internal posting
+
+  Request body:
+  - `id`: Job application ID
+  - `auth`: Authentication token
+  """
+  #if not validate_authentication(content, admin=True):
+  #  return jsonify({"status": auth_error})
+
+  content = request.json
+  if 'id' not in content:
+    return jsonify({"status": "You need to provide a job application id."})
+
+  application_id = content['id']
+  return jsonify(withdraw_application_external(application_id))
 
 
 if __name__ == '__main__':
