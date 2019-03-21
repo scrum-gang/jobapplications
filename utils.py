@@ -26,6 +26,7 @@ db = SQLAlchemy(app)
 
 
 def validate_authentication(auth_headers, admin=False):
+    print(auth_headers)
     if 'Authorization' not in auth_headers:
         return False
 
@@ -49,5 +50,6 @@ def query_auth(auth_token):
     """
     headers = {'content-type': 'application/json', 'Authorization': f"Bearer {auth_token}"}
     url = f"{auth_base_url}/users/self"
+    print("Headers", headers, "url", url)
 
     return requests.get(url, headers=headers).json()
