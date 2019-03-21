@@ -7,13 +7,13 @@ from utils import db
 
 from tables import Application, External, Inhouse
 
-def get_application_by_id(application_id):
+def get_application_by_id(application_id, user_id):
     """
     Fetches all applications based on an application ID.
 
     TODO [aungur]: This should probably be refactored ...
     """
-    application = Application.query.filter_by(id=application_id).first()
+    application = Application.query.filter_by(id=application_id, user_id=user_id).first()
     if not application:
         return {"status": "Application not found!"}
     if application.is_inhouse_posting:

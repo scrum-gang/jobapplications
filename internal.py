@@ -35,7 +35,7 @@ def apply_internal(user_id, job_id, resume):
     return [application.to_dict() for application in user_applications]
 
 
-def update_status_internal(application_id, new_status):
+def update_status_internal(application_id, new_status, user_id):
     """
     Simply update the status of an inhouse job posting
 
@@ -45,7 +45,7 @@ def update_status_internal(application_id, new_status):
     """
     if not new_status or application_id < 0:
         return {"status": "Please give a valid new status and application ID."}
-    application = Application.query.filter_by(id=application_id).first()
+    application = Application.query.filter_by(id=application_id, user_id=user_id).first()
     application.status = new_status
 
     user_applications = Application.query.filter_by(user_id=application.user_id).all()
@@ -80,13 +80,13 @@ def get_applications_internal(identifier, type_of_id):
     return output
 
 
-def withdraw_application_internal(application_id):
+def withdraw_application_internal(application_id, user_id):
     """
     Deletes a user's application.
     """
     if not application_id:
         return {"status": "No application ID provided."}
-    application = Application.query.filter_by(id=application_id).first()
+    application = Application.query.filter_by(id=application_id, user_id=user_id).first()
     inhouse = Inhouse.query.filter_by(application_id=application_id).first()
     if not application:
         return {"status": "No application found."}

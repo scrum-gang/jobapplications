@@ -12,11 +12,11 @@ missing_question_error = {"status": "You need to provide a question!"}
 missing_question_id_error = {"status": "You need to provide a question ID!"}
 question_not_found_error = {"status": "No question found"}
 
-def add_interview_question(application_id, question, title):
+def add_interview_question(application_id, question, title, user_id):
     if type(application_id) != int:
         return integer_id_error
 
-    application = Application.query.filter_by(id=application_id).first()
+    application = Application.query.filter_by(id=application_id, user_id=user_id).first()
     if not application_id or not application:
         return invalid_id_error
 
@@ -30,10 +30,10 @@ def add_interview_question(application_id, question, title):
     return [question.to_dict() for question in questions]
 
 
-def get_interview_questions(application_id):
+def get_interview_questions(application_id, user_id):
     if type(application_id) != int:
         return integer_id_error
-    application = Application.query.filter_by(id=application_id).first()
+    application = Application.query.filter_by(id=application_id, user_id=user_id).first()
     if not application_id or not application:
         return invalid_id_error
     questions = InterviewQuestion.query.filter_by(application_id=application_id).all()
