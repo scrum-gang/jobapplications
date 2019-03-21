@@ -12,6 +12,7 @@ from utils import app, validate_authentication, query_auth
 
 CORS(app)
 auth_error = "You must be authenticated to perform this call."
+auth_error_admin = "You must be authenticated as a Recruiter to perform this call."
 missing_application_id_error = {"status": "You need to provide a job application id."}
 missing_question_or_id_error = {"status": "You need to provide a question and a question_id"}
 add_interview_question_error = {"status": "Something went wrong... "
@@ -137,7 +138,7 @@ def update_status_internal_endpoint():
   headers = request.headers
 
   if not validate_authentication(headers, admin=True):
-    return jsonify({"status": auth_error})
+    return jsonify({"status": auth_error_admin})
 
   user_id = query_auth(headers['Authorization'])['_id']
   application_id = content.get('id', '')
@@ -197,7 +198,7 @@ def get_application_by_job_endpoint(job_id):
   headers = request.headers
 
   if not validate_authentication(headers, admin=True):
-    return jsonify({"status": auth_error})
+    return jsonify({"status": auth_error_admin})
 
   return jsonify(get_applications_internal(job_id, 'job'))
 

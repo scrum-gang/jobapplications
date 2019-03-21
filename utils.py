@@ -37,7 +37,7 @@ def validate_authentication(auth_headers, admin=False):
         return False
 
     # The request requires admin privileges
-    if admin and response['type'] != 'recruiter':
+    if admin and response['type'].lower() != 'recruiter':
         return False
 
     return '_id' in response
