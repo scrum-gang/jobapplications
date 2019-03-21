@@ -19,8 +19,8 @@ def test__apply_with_missing_info(test_teardown):
     Failure scenario: Missing information should throw errors.
     """
     resume = ""
-    with pytest.raises(Exception) as e:
-        apply_internal(user_id, job_id, resume)
+    result = apply_internal(user_id, job_id, resume)
+    assert result['status'] == "Please enter a resume name and a valid job & user id."
 
 
 def test__update_status_empty_string(test_teardown):
@@ -34,8 +34,8 @@ def test__update_status_empty_string(test_teardown):
 
     # We update the status of this application
     new_status = ""
-    with pytest.raises(Exception) as e:
-        update_status_internal(applications[0]['id'], new_status)
+    result = update_status_internal(applications[0]['id'], new_status)
+    assert result['status'] == "Please give a valid new status and application ID."
 
 
 def test__apply(test_teardown):

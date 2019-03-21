@@ -17,7 +17,7 @@ def apply_internal(user_id, job_id, resume):
     `resume`: Handy tool for applying to jobs
     """
     if not resume or job_id < 0 or not user_id:
-        raise Exception("Please enter a resume name and a valid job & user id.")
+        return {"status": "Please enter a resume name and a valid job & user id."}
     for application in Application.query.filter_by(user_id=user_id):
         inhouse = Inhouse.query.filter_by(application_id=application.id, job_id=job_id).first()
         if inhouse:
@@ -44,7 +44,7 @@ def update_status_internal(application_id, new_status):
     `new_status`: New status for this application
     """
     if not new_status or application_id < 0:
-        raise Exception("Please give a valid new status and application ID.")
+        return {"status": "Please give a valid new status and application ID."}
     application = Application.query.filter_by(id=application_id).first()
     application.status = new_status
 

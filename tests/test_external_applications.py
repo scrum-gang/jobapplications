@@ -19,8 +19,8 @@ def test__apply_with_missing_info(test_teardown):
     user_id = "someid456"
     url, position, company = "", "", ""
 
-    with pytest.raises(Exception) as e:
-        apply_external(user_id, url, position, company, resume, date_posted, deadline)
+    result = apply_external(user_id, url, position, company, resume, date_posted, deadline)
+    assert result['status'] == "You must provide a job URL, position and company."
 
 
 def test__update_status_empty_string(test_teardown):
@@ -34,8 +34,9 @@ def test__update_status_empty_string(test_teardown):
 
     # We update the status of this application
     new_status = ""
-    with pytest.raises(Exception) as e:
-        update_status_external(applications[0]['id'], new_status)
+
+    result = update_status_external(applications[0]['id'], new_status)
+    assert result['status'] == "You must provide a non-empty status."
 
 
 def test__apply(test_teardown):
