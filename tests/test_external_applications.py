@@ -4,7 +4,7 @@ import os
 import sys
 
 sys.path.insert(0, os.getcwd())
-from external import apply_external, update_status_external, get_applications_external
+from external import apply_external, update_status_external, get_applications_external, withdraw_application_external
 
 user_id = "someid123"
 resume = "/potato/IamAPotato"
@@ -71,3 +71,17 @@ def test__update_status(test_teardown):
     assert applications[0]['status'] != new_status
     assert updated_applications[0]['status'] == new_status
     assert updated_applications[0]['id'] == applications[0]['id']
+
+
+def test__withdraw(test_teardown):
+    """
+    Basic test for removing applications
+    """
+    apply_external(user_id, url, position, company, resume, date_posted, deadline)
+    applications = get_applications_external(user_id)
+    assert len(applications) == 1
+
+    # We delete the application
+    withdraw_application_external(applications[0]['application_id'])
+    applications = get_applications_external(user_id)
+    assert len(applications) == 0
