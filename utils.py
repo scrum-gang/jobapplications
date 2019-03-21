@@ -4,7 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 import os
 import requests
 
-auth_base_url = "https://jobhub-authentication-staging.herokuapp.com"
+auth_base_url = "https://jobhub-authentication.herokuapp.com/"
 # app initialization
 app = Flask(__name__)
 app.debug = True
