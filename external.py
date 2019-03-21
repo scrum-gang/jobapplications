@@ -6,6 +6,9 @@ from utils import db
 
 from tables import Application, External
 
+missing_url_position_company_error = {"status": "You must provide a job URL, position and company."}
+missing_user_id_error = {"status": "User ID cannot be null."}
+
 
 def apply_external(user_id, url, position, company, resume, date_posted, deadline, status="Applied"):
     """
@@ -20,11 +23,13 @@ def apply_external(user_id, url, position, company, resume, date_posted, deadlin
     deadline: Deadline for the job
     """
     if not url or not position or not company:
-        raise Exception("You must provide a job URL, position and company.")
+        return missing_url_position_company_error
+    if not user_id:
+        return missing_user_id_error
     for application in Application.query.filter_by(user_id=user_id).all():
         external = External.query.filter_by(company=company, position=position, application_id=application.id).first()
         if external:
-            return [{"status": f"Already found an application to {position} at {company} for {user_id}!"}]
+            return {"status": f"Already found an application to {position} at {company} for {user_id}!"}
 
     application = Application(date=str(datetime.now()), user_id=user_id,
                               is_inhouse_posting=False, status=status, resume=resume)
@@ -49,7 +54,7 @@ def update_status_external(application_id, new_status):
     new_status: New status of the user for that application
     """
     if not new_status:
-        raise Exception("You must provide a non-empty status.")
+        return {"status": "You must provide a non-empty status."}
 
     application = Application.query.filter_by(id=application_id).first()
     application.status = new_status

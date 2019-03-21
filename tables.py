@@ -54,6 +54,7 @@ class InterviewQuestion(db.Model):
     __tablename__ = "interviewquestions"
     id = db.Column(db.Integer, primary_key=True)
     application_id = db.Column(db.Integer, db.ForeignKey('applications.id'))
+    title = db.Column(db.String(256))
     question = db.Column(db.String(256))
 
     def __repr__(self):
