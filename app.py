@@ -215,11 +215,11 @@ def withdraw_internal_application_endpoint():
   return jsonify(withdraw_application_internal(application_id))
 
 
-@app.route('/withdraw/internal', methods=['DELETE'])
+@app.route('/withdraw/external', methods=['DELETE'])
 @cross_origin(origin='*',headers=['Content-Type'])
 def withdraw_external_application_endpoint():
   """
-  Withdraws an application to an internal posting
+  Withdraws an application to an external posting
 
   Request body:
   - `id`: Job application ID
@@ -236,20 +236,17 @@ def withdraw_external_application_endpoint():
   return jsonify(withdraw_application_external(application_id))
 
 
-@app.route('/interview/question')
+@app.route('/interview/question/<application_id>')
 @cross_origin(origin='*', headers=['Content-Type'])
-def get_interview_questions_endpoint():
+def get_interview_questions_endpoint(application_id):
   """
   Gets all interview questions
 
   Request body:
-  - `application_id`: Job application ID
   - `auth`: Authentication token
   """
   content = request.json
-  if 'application_id' not in content:
-    return jsonify(missing_application_id_error)
-  return jsonify(get_interview_questions(content['application_id']))
+  return jsonify(get_interview_questions(application_id))
 
 
 if __name__ == '__main__':
