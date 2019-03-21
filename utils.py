@@ -25,19 +25,27 @@ heroku = Heroku(app)
 db = SQLAlchemy(app)
 
 
-def validate_authentication(content, user=None, admin=False):
-    return True
-    if 'auth' not in content:
+def validate_authentication(auth_headers, admin=False):
+    if 'Authorization' not in auth_headers:
         return False
-    headers = {'content-type': 'application/json', 'Authorization': f"Bearer {content['auth']}"}
-    response = requests.get(f"{auth_base_url}/users/self", headers=headers)
+
+    auth_token = auth_headers['Authorization']
+    response = query_auth(auth_token)
+
+    # If the token is not verified, it is invalid by default
     if 'verified' not in response:
         return False
 
+    # The request requires admin privileges
     if admin and response['type'] != 'recruiter':
         return False
 
-    if user:
-        return response['_id'] == user
-    else:
-        return response['verified']
+    return '_id' in response
+
+
+def query_auth(auth_token):
+    """
+    Simple wrapper around auth API, re-used in other parts of the code.
+    """
+    headers = {'content-type': 'application/json', 'Authorization': f"Bearer {auth_token}"}
+    return requests.get(f"{auth_base_url}/users/self", headers=headers)

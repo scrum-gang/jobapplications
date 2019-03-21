@@ -14,7 +14,7 @@ status = "Applied"
 resume = "/this/resume/"
 
 
-def test_db_is_created():
+def test_db_is_created(test_teardown):
     """
     Ensures that the database is created and contains
     the correct tables.

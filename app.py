@@ -8,7 +8,7 @@ from internal import apply_internal, update_status_internal, get_applications_in
 from interview import add_interview_question, get_interview_questions, update_interview_question
 
 from applications import get_application_by_id
-from utils import app, validate_authentication
+from utils import app, validate_authentication, query_auth
 
 CORS(app)
 auth_error = "You must be authenticated to perform this call."
@@ -25,7 +25,7 @@ def index():
 
 
 @app.route('/apply/external', methods=['POST'])
-@cross_origin(origin='*',headers=['Content-Type'])
+@cross_origin(origin='*',headers=['Authorization', 'Content-Type'])
 def apply_external_endpoint():
   """
   Enables user to apply to an external job posting.
@@ -37,22 +37,23 @@ def apply_external_endpoint():
   - `resume`: Handy tool for applying to jobs
   - `date_posted`: When the application was posted
   - `deadline`: Deadline to apply for the job
-  - `user_id`: ID of the user applying
-  - `auth`: Authentication token
   """
   content = request.json
-  #if not validate_authentication(content):
-  #  return jsonify({"status": auth_error})
+  headers = request.headers
+
+  if not validate_authentication(headers):
+    return jsonify({"status": auth_error})
 
   url, position, company = content.get("url", ""), content.get('position', ""), content.get('company', "")
   date_posted, deadline = content.get('date_posted', ""), content.get('deadline', "")
-  user_id, resume, status = content.get('user_id', ""), content.get('resume', ""), content.get("status", "Applied")
+  resume, status = content.get('resume', ""), content.get("status", "Applied")
+  user_id = query_auth(headers['Authorization'])['_id']
   return jsonify(apply_external(user_id, url, position, company, resume,
                                 date_posted, deadline, status=status))
 
 
 @app.route('/apply/internal', methods=['POST'])
-@cross_origin(origin='*',headers=['Content-Type'])
+@cross_origin(origin='*',headers=['Authorization', 'Content-Type'])
 def apply_internal_endpoint():
   """
   Enables user to apply to an external job posting.
@@ -61,17 +62,21 @@ def apply_internal_endpoint():
   - `user_id`: ID of the user applying
   - `job_id`: ID of the job the user is applying to
   - `resume`: Handy tool for applying to jobs
-  - `auth`: Authentication token
   """
-  #if not validate_authentication(content):
-  #  return jsonify({"status": auth_error})
   content = request.json
+  headers = request.headers
+
+  if not validate_authentication(headers):
+    return jsonify({"status": auth_error})
+
+  user_id = query_auth(headers['Authorization'])['_id']
   job_id = content['job_id']
-  user_id, resume = content['user_id'], content['resume']
+  resume = content['resume']
   return jsonify(apply_internal(user_id, job_id, resume))
 
 
 @app.route('/interview/question', methods=['POST'])
+@cross_origin(origin='*',headers=['Authorization', 'Content-Type'])
 def add_interview_question_endpoint():
   """
   Enables user to track interview questions
@@ -79,11 +84,14 @@ def add_interview_question_endpoint():
   Request body:
   - `application_id`: ID of the application to which the question maps to
   - `question`: Interview question
-  - `auth`: Authentication token
   """
   content = request.json
-  if not validate_authentication(content):
+  headers = request.headers
+
+  if not validate_authentication(headers):
     return jsonify({"status": auth_error})
+
+  user_id = query_auth(headers['Authorization'])['_id']
   try:
     application_id = content['application_id']
     question = content['question']
@@ -91,11 +99,11 @@ def add_interview_question_endpoint():
   except Exception as e:
     print(e)
     return jsonify(add_interview_question_error)
-  return jsonify(add_interview_question(application_id, question, title))
+  return jsonify(add_interview_question(application_id, question, title, user_id))
 
 
 @app.route('/update-status/external', methods=['PUT'])
-@cross_origin(origin='*',headers=['Content-Type'])
+@cross_origin(origin='*',headers=['Authorization', 'Content-Type'])
 def update_status_external_endpoint():
   """
   Updates the status of an external job posting
@@ -103,19 +111,21 @@ def update_status_external_endpoint():
   Request body:
   - `id`: Job application ID
   - `new_status`: New status of the job application
-  - `auth`: Authentication token
   """
-  #if not validate_authentication(content):
-  #  return jsonify({"status": auth_error})
-
   content = request.json
+  headers = request.headers
+
+  if not validate_authentication(headers):
+    return jsonify({"status": auth_error})
+
+  user_id = query_auth(headers['Authorization'])['_id']
   application_id = content['id']
   new_status = content['new_status']
-  return jsonify(update_status_external(application_id, new_status))
+  return jsonify(update_status_external(application_id, new_status, user_id))
 
 
 @app.route('/update-status/internal', methods=['PUT'])
-@cross_origin(origin='*',headers=['Content-Type'])
+@cross_origin(origin='*',headers=['Authorization', 'Content-Type'])
 def update_status_internal_endpoint():
   """
   Updates the status of an external job posting
@@ -123,19 +133,21 @@ def update_status_internal_endpoint():
   Request body:
   - `id`: Job application ID
   - `new_status`: New status of the job application
-  - `auth`: Authentication token
   """
-  #if not validate_authentication(content, admin=True):
-  #  return jsonify({"status": auth_error})
-
   content = request.json
+  headers = request.headers
+
+  if not validate_authentication(headers, admin=True):
+    return jsonify({"status": auth_error})
+
+  user_id = query_auth(headers['Authorization'])['_id']
   application_id = content['id']
   new_status = content['new_status']
-  return jsonify(update_status_internal(application_id, new_status))
+  return jsonify(update_status_internal(application_id, new_status, user_id))
 
 
 @app.route('/update/question', methods=['PUT'])
-@cross_origin(origin='*', headers=['Content-Type'])
+@cross_origin(origin='*',headers=['Authorization', 'Content-Type'])
 def update_interview_questions_endpoint():
   """
   Updates an interview question
@@ -143,24 +155,31 @@ def update_interview_questions_endpoint():
   Request body:
   - `id`: Question ID
   - `new_question`: New question for that interview
-  - `auth`: Authentication token
   """
   content = request.json
+  headers = request.headers
+
+  if not validate_authentication(headers):
+    return jsonify({"status": auth_error})
+
   if 'question' not in content or 'id' not in content:
     return jsonify(missing_question_or_id_error)
   return jsonify(update_interview_question(content['id'], content['question']))
 
 
-@app.route('/applications/user/<user_id>')
-@app.route('/applications/user/<user_id>/<application_type>')
-@cross_origin(origin='*',headers=['Content-Type'])
-def get_application_by_user_endpoint(user_id, application_type=None):
+@app.route('/applications/user/')
+@app.route('/applications/user/<application_type>')
+@cross_origin(origin='*',headers=['Authorization', 'Content-Type'])
+def get_application_by_user_endpoint(application_type=None):
   """
   Gets job postings for a specific user.
-  - `auth`: Authentication token
   """
-  #if not validate_authentication(content, user=user_id):
-  #  return jsonify({"status": auth_error})
+  headers = request.headers
+
+  if not validate_authentication(headers):
+    return jsonify({"status": auth_error})
+
+  user_id = query_auth(headers['Authorization'])['_id']
 
   applications_external, applications_internal = [], []
   if application_type == "external" or not application_type:
@@ -171,82 +190,94 @@ def get_application_by_user_endpoint(user_id, application_type=None):
 
 
 @app.route('/applications/job/<job_id>')
-@cross_origin(origin='*',headers=['Content-Type'])
+@cross_origin(origin='*',headers=['Authorization', 'Content-Type'])
 def get_application_by_job_endpoint(job_id):
   """
   Gets all job postings to an internal job
   """
-  #if not validate_authentication(content, admin=True):
-  #  return jsonify({"status": auth_error})
+  headers = request.headers
+
+  if not validate_authentication(headers, admin=True):
+    return jsonify({"status": auth_error})
 
   return jsonify(get_applications_internal(job_id, 'job'))
 
 
 @app.route('/applications/<application_id>')
-@cross_origin(origin='*',headers=['Content-Type'])
+@cross_origin(origin='*',headers=['Authorization', 'Content-Type'])
 def get_application(application_id):
   """
   Gets a single application by its unique ID
   """
-  #if not validate_authentication(content, admin=True):
-  #  return jsonify({"status": auth_error})
+  headers = request.headers
 
-  return jsonify(get_application_by_id(application_id))
+  if not validate_authentication(headers):
+    return jsonify({"status": auth_error})
+
+  user_id = query_auth(headers['Authorization'])['_id']
+  return jsonify(get_application_by_id(application_id, user_id))
+
+
+@app.route('/interview/question/<int:application_id>')
+@cross_origin(origin='*',headers=['Authorization', 'Content-Type'])
+def get_interview_questions_endpoint(application_id):
+  """
+  Gets all interview questions
+  """
+  headers = request.headers
+
+  if not validate_authentication(headers):
+    return jsonify({"status": auth_error})
+
+  return jsonify(get_interview_questions(application_id))
 
 
 @app.route('/withdraw/internal', methods=['DELETE'])
-@cross_origin(origin='*',headers=['Content-Type'])
+@cross_origin(origin='*',headers=['Authorization', 'Content-Type'])
 def withdraw_internal_application_endpoint():
   """
   Withdraws an application to an internal posting
 
   Request body:
   - `id`: Job application ID
-  - `auth`: Authentication token
   """
-  #if not validate_authentication(content, admin=True):
-  #  return jsonify({"status": auth_error})
-
   content = request.json
+  headers = request.headers
+
+  if not validate_authentication(headers):
+    return jsonify({"status": auth_error})
+
   if 'id' not in content:
     return jsonify(missing_application_id_error)
 
   application_id = content['id']
-  return jsonify(withdraw_application_internal(application_id))
+  user_id = query_auth(headers['Authorization'])['_id']
+
+  return jsonify(withdraw_application_internal(application_id, user_id))
 
 
 @app.route('/withdraw/external', methods=['DELETE'])
-@cross_origin(origin='*',headers=['Content-Type'])
+@cross_origin(origin='*',headers=['Authorization', 'Content-Type'])
 def withdraw_external_application_endpoint():
   """
   Withdraws an application to an external posting
 
   Request body:
   - `id`: Job application ID
-  - `auth`: Authentication token
   """
-  #if not validate_authentication(content, admin=True):
-  #  return jsonify({"status": auth_error})
-
   content = request.json
+  headers = request.headers
+
+  if not validate_authentication(headers):
+    return jsonify({"status": auth_error})
+
   if 'id' not in content:
     return jsonify(missing_application_id_error)
 
   application_id = content['id']
-  return jsonify(withdraw_application_external(application_id))
+  user_id = query_auth(headers['Authorization'])['_id']
 
-
-@app.route('/interview/question/<int:application_id>')
-@cross_origin(origin='*', headers=['Content-Type'])
-def get_interview_questions_endpoint(application_id):
-  """
-  Gets all interview questions
-
-  Request body:
-  - `auth`: Authentication token
-  """
-  content = request.json
-  return jsonify(get_interview_questions(application_id))
+  return jsonify(withdraw_application_external(application_id, user_id))
 
 
 if __name__ == '__main__':

@@ -35,7 +35,7 @@ def test__update_status_empty_string(test_teardown):
     # We update the status of this application
     new_status = ""
 
-    result = update_status_external(applications[0]['id'], new_status)
+    result = update_status_external(applications[0]['id'], new_status, user_id)
     assert result['status'] == "You must provide a non-empty status."
 
 
@@ -67,7 +67,7 @@ def test__update_status(test_teardown):
     # We create an application in the DB
     applications = apply_external(user_id, url, position, company, resume,
                                   date_posted, deadline)
-    updated_applications = update_status_external(applications[0]['id'], new_status)
+    updated_applications = update_status_external(applications[0]['id'], new_status, user_id)
 
     assert applications[0]['status'] != new_status
     assert updated_applications[0]['status'] == new_status
@@ -83,6 +83,6 @@ def test__withdraw(test_teardown):
     assert len(applications) == 1
 
     # We delete the application
-    withdraw_application_external(applications[0]['application_id'])
+    withdraw_application_external(applications[0]['application_id'], user_id)
     applications = get_applications_external(user_id)
     assert len(applications) == 0

@@ -34,7 +34,7 @@ def test__update_status_empty_string(test_teardown):
 
     # We update the status of this application
     new_status = ""
-    result = update_status_internal(applications[0]['id'], new_status)
+    result = update_status_internal(applications[0]['id'], new_status, user_id)
     assert result['status'] == "Please give a valid new status and application ID."
 
 
@@ -76,7 +76,7 @@ def test__update_status(test_teardown):
 
     # We create an application in the DB
     applications = apply_internal(user_id, job_id, resume)
-    updated_applications = update_status_internal(applications[0]['id'], new_status)
+    updated_applications = update_status_internal(applications[0]['id'], new_status, user_id)
 
     assert applications[0]['status'] != new_status
     assert updated_applications[0]['status'] == new_status
@@ -95,7 +95,7 @@ def test__withdraw(test_teardown):
     assert len(applications_by_user) == 1
 
     # We delete the application
-    withdraw_application_internal(applications_by_user[0]['application_id'])
+    withdraw_application_internal(applications_by_user[0]['application_id'], user_id)
     applications_by_user = get_applications_internal(user_id, 'user')
     assert len(applications_by_user) == 0
 
