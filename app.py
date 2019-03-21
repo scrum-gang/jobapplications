@@ -236,7 +236,7 @@ def withdraw_external_application_endpoint():
   return jsonify(withdraw_application_external(application_id))
 
 
-@app.route('/interview/question/<application_id>')
+@app.route('/interview/question/<int:application_id>')
 @cross_origin(origin='*', headers=['Content-Type'])
 def get_interview_questions_endpoint(application_id):
   """
