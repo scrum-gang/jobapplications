@@ -112,6 +112,7 @@ def test_db_can_add_interview_questions():
     external_id = None
     inhouse_text = "How much is too much?"
     external_text = "Two potatoes or one poutine?"
+    title = "Some Question"
     for application in applications:
         if application.is_inhouse_posting:
             inhouse_id = application.id
@@ -119,8 +120,8 @@ def test_db_can_add_interview_questions():
             external_id = application.id
     assert inhouse_id is not None and external_id is not None
 
-    inhouse_question = InterviewQuestion(application_id=inhouse_id, question=inhouse_text)
-    external_question = InterviewQuestion(application_id=external_id, question=external_text)
+    inhouse_question = InterviewQuestion(application_id=inhouse_id, question=inhouse_text, title=title)
+    external_question = InterviewQuestion(application_id=external_id, question=external_text, title=title)
     db.session.add(inhouse_question)
     db.session.add(external_question)
 

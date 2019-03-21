@@ -5,13 +5,18 @@ from flask_cors import CORS, cross_origin
 
 from external import apply_external, update_status_external, get_applications_external, withdraw_application_external
 from internal import apply_internal, update_status_internal, get_applications_internal, withdraw_application_internal
-from interview import add_interview_question
+from interview import add_interview_question, get_interview_questions, update_interview_question
 
 from applications import get_application_by_id
 from utils import app, validate_authentication
 
 CORS(app)
 auth_error = "You must be authenticated to perform this call."
+missing_application_id_error = {"status": "You need to provide a job application id."}
+missing_question_or_id_error = {"status": "You need to provide a question and a question_id"}
+add_interview_question_error = {"status": "Something went wrong... "
+                                          "Make sure you included a `application_id`, `question` and `title`."}
+
 
 @app.route('/')
 @cross_origin(origin='*',headers=['Content-Type'])
@@ -79,9 +84,13 @@ def add_interview_question_endpoint():
   if not validate_authentication(content):
     return jsonify({"status": auth_error})
   content = request.json
-  application_id = content['application_id']
-  question = content['question']
-  return jsonify(add_interview_question(application_id, question))
+  try:
+    application_id = content['application_id']
+    question = content['question']
+    title = content['title']
+  except Exception:
+    return jsonify(add_interview_question_error)
+  return jsonify(add_interview_question(application_id, question, title))
 
 
 @app.route('/update-status/external', methods=['PUT'])
@@ -122,6 +131,23 @@ def update_status_internal_endpoint():
   application_id = content['id']
   new_status = content['new_status']
   return jsonify(update_status_internal(application_id, new_status))
+
+
+@app.route('/update/question', methods=['PUT'])
+@cross_origin(origin='*', headers=['Content-Type'])
+def update_interview_questions_endpoint():
+  """
+  Updates an interview question
+
+  Request body:
+  - `id`: Question ID
+  - `new_question`: New question for that interview
+  - `auth`: Authentication token
+  """
+  content = request.json
+  if 'question' not in content or 'id' not in content:
+    return jsonify(missing_question_or_id_error)
+  return update_interview_question(content['id'], content['question'])
 
 
 @app.route('/applications/user/<user_id>')
@@ -182,7 +208,7 @@ def withdraw_internal_application_endpoint():
 
   content = request.json
   if 'id' not in content:
-    return jsonify({"status": "You need to provide a job application id."})
+    return jsonify(missing_application_id_error)
 
   application_id = content['id']
   return jsonify(withdraw_application_internal(application_id))
@@ -203,10 +229,26 @@ def withdraw_external_application_endpoint():
 
   content = request.json
   if 'id' not in content:
-    return jsonify({"status": "You need to provide a job application id."})
+    return jsonify(missing_application_id_error)
 
   application_id = content['id']
   return jsonify(withdraw_application_external(application_id))
+
+
+@app.route('/interview/questions')
+@cross_origin(origin='*', headers=['Content-Type'])
+def get_interview_questions_endpoint():
+  """
+  Gets all interview questions
+
+  Request body:
+  - `id`: Job application ID
+  - `auth`: Authentication token
+  """
+  content = request.json
+  if 'id' not in content:
+    return jsonify(missing_application_id_error)
+  return get_interview_questions(content['id'])
 
 
 if __name__ == '__main__':
