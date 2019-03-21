@@ -36,7 +36,7 @@ def test__update_status_empty_string(test_teardown):
     new_status = ""
 
     result = update_status_external(applications[0]['id'], new_status, user_id)
-    assert result['status'] == "You must provide a non-empty status."
+    assert result['status'] == "You must provide a non-empty new status."
 
 
 def test__apply(test_teardown):

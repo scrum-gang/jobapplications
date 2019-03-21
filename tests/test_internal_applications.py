@@ -9,7 +9,7 @@ from tables import Application, Inhouse
 from internal import get_applications_internal, apply_internal, update_status_internal, withdraw_application_internal
 
 user_id = "someid123"
-job_id = 0
+job_id = "0"
 resume = "/potato/resume.pdf"
 
 
@@ -20,7 +20,7 @@ def test__apply_with_missing_info(test_teardown):
     """
     resume = ""
     result = apply_internal(user_id, job_id, resume)
-    assert result['status'] == "Please enter a resume name and a valid job & user id."
+    assert result['status'] == "Please enter a resume name and a valid job id."
 
 
 def test__update_status_empty_string(test_teardown):
@@ -61,7 +61,7 @@ def test__apply(test_teardown):
     assert len(applications_by_job) == 1
     assert applications_by_user[0]['is_inhouse_posting'] and applications_by_job[0]['is_inhouse_posting']
     assert applications_by_user[0]['resume'] == applications_by_job[0]['resume'] == resume
-    assert applications_by_user[0]['job_id'] == job_id
+    assert applications_by_user[0]['job_id'] == int(job_id)
     assert applications_by_user[0]['job_id'] != applications_by_job[0]['job_id']
     assert applications_by_user[0]['user_id'] == applications_by_job[0]['user_id'] == user_id
     assert applications_by_user[0]['application_id'] >= 0

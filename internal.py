@@ -16,8 +16,10 @@ def apply_internal(user_id, job_id, resume):
     `job_id`: ID of the job a user is applying for
     `resume`: Handy tool for applying to jobs
     """
-    if not resume or job_id < 0 or not user_id:
-        return {"status": "Please enter a resume name and a valid job & user id."}
+    if not user_id:
+        return {"status": "Please double check your authentication token, no user ID found."}
+    if not resume or not job_id:
+        return {"status": "Please enter a resume name and a valid job id."}
     for application in Application.query.filter_by(user_id=user_id):
         inhouse = Inhouse.query.filter_by(application_id=application.id, job_id=job_id).first()
         if inhouse:
@@ -43,7 +45,7 @@ def update_status_internal(application_id, new_status, user_id):
     `application_id`: ID of the application whose status we're changing
     `new_status`: New status for this application
     """
-    if not new_status or application_id < 0:
+    if not new_status or not application_id:
         return {"status": "Please give a valid new status and application ID."}
     application = Application.query.filter_by(id=application_id, user_id=user_id).first()
     application.status = new_status

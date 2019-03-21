@@ -7,7 +7,7 @@ from utils import db
 from tables import Application, External
 
 missing_url_position_company_error = {"status": "You must provide a job URL, position and company."}
-missing_user_id_error = {"status": "User ID cannot be null."}
+missing_user_id_error = {"status": "User ID cannot be null. Please double check your authentication token."}
 
 
 def apply_external(user_id, url, position, company, resume, date_posted, deadline, status="Applied"):
@@ -54,7 +54,7 @@ def update_status_external(application_id, new_status, user_id):
     new_status: New status of the user for that application
     """
     if not new_status:
-        return {"status": "You must provide a non-empty status."}
+        return {"status": "You must provide a non-empty new status."}
 
     application = Application.query.filter_by(id=application_id, user_id=user_id).first()
     application.status = new_status

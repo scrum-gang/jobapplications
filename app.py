@@ -59,7 +59,6 @@ def apply_internal_endpoint():
   Enables user to apply to an external job posting.
 
   Request body:
-  - `user_id`: ID of the user applying
   - `job_id`: ID of the job the user is applying to
   - `resume`: Handy tool for applying to jobs
   """
@@ -70,8 +69,8 @@ def apply_internal_endpoint():
     return jsonify({"status": auth_error})
 
   user_id = query_auth(headers['Authorization'])['_id']
-  job_id = content['job_id']
-  resume = content['resume']
+  job_id = content.get('job_id', '')
+  resume = content.get('resume', '')
   return jsonify(apply_internal(user_id, job_id, resume))
 
 
@@ -119,8 +118,8 @@ def update_status_external_endpoint():
     return jsonify({"status": auth_error})
 
   user_id = query_auth(headers['Authorization'])['_id']
-  application_id = content['id']
-  new_status = content['new_status']
+  application_id = content.get('id', '')
+  new_status = content.get('new_status', '')
   return jsonify(update_status_external(application_id, new_status, user_id))
 
 
@@ -141,8 +140,8 @@ def update_status_internal_endpoint():
     return jsonify({"status": auth_error})
 
   user_id = query_auth(headers['Authorization'])['_id']
-  application_id = content['id']
-  new_status = content['new_status']
+  application_id = content.get('id', '')
+  new_status = content.get('new_status', '')
   return jsonify(update_status_internal(application_id, new_status, user_id))
 
 
@@ -162,9 +161,9 @@ def update_interview_questions_endpoint():
   if not validate_authentication(headers):
     return jsonify({"status": auth_error})
 
-  if 'question' not in content or 'id' not in content:
+  if 'new_question' not in content or 'id' not in content:
     return jsonify(missing_question_or_id_error)
-  return jsonify(update_interview_question(content['id'], content['question']))
+  return jsonify(update_interview_question(content['id'], content['new_question']))
 
 
 @app.route('/applications/user/')
@@ -229,7 +228,8 @@ def get_interview_questions_endpoint(application_id):
   if not validate_authentication(headers):
     return jsonify({"status": auth_error})
 
-  return jsonify(get_interview_questions(application_id))
+  user_id = query_auth(headers['Authorization'])['_id']
+  return jsonify(get_interview_questions(application_id, user_id))
 
 
 @app.route('/withdraw/internal', methods=['DELETE'])
@@ -274,7 +274,7 @@ def withdraw_external_application_endpoint():
   if 'id' not in content:
     return jsonify(missing_application_id_error)
 
-  application_id = content['id']
+  application_id = content.get('id', '')
   user_id = query_auth(headers['Authorization'])['_id']
 
   return jsonify(withdraw_application_external(application_id, user_id))
