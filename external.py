@@ -20,11 +20,13 @@ def apply_external(user_id, url, position, company, resume, date_posted, deadlin
     deadline: Deadline for the job
     """
     if not url or not position or not company:
-        raise Exception("You must provide a job URL, position and company.")
+        return {"status": "You must provide a job URL, position and company."}
+    if not user_id:
+        return {"status": "User ID cannot be null."}
     for application in Application.query.filter_by(user_id=user_id).all():
         external = External.query.filter_by(company=company, position=position, application_id=application.id).first()
         if external:
-            return [{"status": f"Already found an application to {position} at {company} for {user_id}!"}]
+            return {"status": f"Already found an application to {position} at {company} for {user_id}!"}
 
     application = Application(date=str(datetime.now()), user_id=user_id,
                               is_inhouse_posting=False, status=status, resume=resume)
