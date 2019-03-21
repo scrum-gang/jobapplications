@@ -4,7 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 import os
 import requests
 
-auth_base_url = "https://jobhub-authentication.herokuapp.com/"
+auth_base_url = "https://jobhub-authentication-staging.herokuapp.com"
 # app initialization
 app = Flask(__name__)
 app.debug = True
@@ -48,4 +48,6 @@ def query_auth(auth_token):
     Simple wrapper around auth API, re-used in other parts of the code.
     """
     headers = {'content-type': 'application/json', 'Authorization': f"Bearer {auth_token}"}
-    return requests.get(f"{auth_base_url}/users/self", headers=headers)
+    url = f"{auth_base_url}/users/self"
+
+    return requests.get(url, headers=headers).json()
