@@ -5,7 +5,11 @@ Repository for the microservices which enables users to track their job applicat
 
 Job applications can either come from a user submitting the application form of a in-house posting, or simply by tracking an external posting via our platform.
 
-This is currently a work in progress, the [database schema can be found here](https://github.com/scrum-gang/jobapplications/wiki/Database-Design).
+This is completed, please look at the wiki for more information on this API.
+
+The [database schema can be found here](https://github.com/scrum-gang/jobapplications/wiki/Database-Design).
+
+The [endpoints available can be found here](https://github.com/scrum-gang/jobapplications/wiki/Endpoints).
 
 # Setup
 
