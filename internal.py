@@ -7,7 +7,7 @@ from utils import db
 from tables import Application, Inhouse
 
 
-def apply_internal(user_id, job_id, resume):
+def apply_internal(user_id, job_id, resume, comment):
     """
     Basic logic for applying to internal job postings.
 
@@ -25,7 +25,7 @@ def apply_internal(user_id, job_id, resume):
         if inhouse:
             return [{"status": f"Already found an application for job ID {job_id} for the user {user_id}"}]
     generic_application = Application(date=str(datetime.now()), user_id=user_id, is_inhouse_posting=True,
-                                      status="Applied", resume=resume)
+                                      status="Applied", resume=resume, comment=comment)
     db.session.add(generic_application)
     db.session.commit()
 
@@ -34,23 +34,6 @@ def apply_internal(user_id, job_id, resume):
     db.session.commit()
 
     user_applications = Application.query.filter_by(user_id=user_id).all()
-    return [application.to_dict() for application in user_applications]
-
-
-def update_status_internal(application_id, new_status, user_id):
-    """
-    Simply update the status of an inhouse job posting
-
-    Arguments:
-    `application_id`: ID of the application whose status we're changing
-    `new_status`: New status for this application
-    """
-    if not new_status or not application_id:
-        return {"status": "Please give a valid new status and application ID."}
-    application = Application.query.filter_by(id=application_id, user_id=user_id).first()
-    application.status = new_status
-
-    user_applications = Application.query.filter_by(user_id=application.user_id).all()
     return [application.to_dict() for application in user_applications]
 
 

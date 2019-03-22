@@ -10,7 +10,7 @@ missing_url_position_company_error = {"status": "You must provide a job URL, pos
 missing_user_id_error = {"status": "User ID cannot be null. Please double check your authentication token."}
 
 
-def apply_external(user_id, url, position, company, resume, date_posted, deadline, status="Applied"):
+def apply_external(user_id, url, position, company, resume, date_posted, deadline, comment, status="Applied"):
     """
     Applies to an external job posting
 
@@ -32,7 +32,7 @@ def apply_external(user_id, url, position, company, resume, date_posted, deadlin
             return {"status": f"Already found an application to {position} at {company} for {user_id}!"}
 
     application = Application(date=str(datetime.now()), user_id=user_id,
-                              is_inhouse_posting=False, status=status, resume=resume)
+                              is_inhouse_posting=False, status=status, resume=resume, comment=comment)
     db.session.add(application)
     db.session.commit()
 
@@ -42,23 +42,6 @@ def apply_external(user_id, url, position, company, resume, date_posted, deadlin
     db.session.commit()
     user_applications = Application.query.filter_by(user_id=user_id).all()
 
-    return [application.to_dict() for application in user_applications]
-
-
-def update_status_external(application_id, new_status, user_id):
-    """
-    Updates the status of a user for a given job application
-
-    Arguments:
-    application_id: ID of the application
-    new_status: New status of the user for that application
-    """
-    if not new_status:
-        return {"status": "You must provide a non-empty new status."}
-
-    application = Application.query.filter_by(id=application_id, user_id=user_id).first()
-    application.status = new_status
-    user_applications = Application.query.filter_by(user_id=application.user_id).all()
     return [application.to_dict() for application in user_applications]
 
 

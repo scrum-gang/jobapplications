@@ -6,12 +6,13 @@ from datetime import datetime
 sys.path.insert(0, os.getcwd())
 from utils import db
 from tables import Application, Inhouse
-from internal import get_applications_internal, apply_internal, update_status_internal, withdraw_application_internal
+from applications import update_status
+from internal import get_applications_internal, apply_internal, withdraw_application_internal
 
 user_id = "someid123"
 job_id = "0"
 resume = "/potato/resume.pdf"
-
+comment = ""
 
 
 def test__apply_with_missing_info(test_teardown):
@@ -19,7 +20,7 @@ def test__apply_with_missing_info(test_teardown):
     Failure scenario: Missing information should throw errors.
     """
     resume = ""
-    result = apply_internal(user_id, job_id, resume)
+    result = apply_internal(user_id, job_id, resume, comment)
     assert result['status'] == "Please enter a resume name and a valid job id."
 
 
@@ -30,12 +31,12 @@ def test__update_status_empty_string(test_teardown):
     user_id = "someid456"
 
     # We create an application in the DB
-    applications = apply_internal(user_id, job_id, resume)
+    applications = apply_internal(user_id, job_id, resume, comment)
 
     # We update the status of this application
     new_status = ""
-    result = update_status_internal(applications[0]['id'], new_status, user_id)
-    assert result['status'] == "Please give a valid new status and application ID."
+    result = update_status(applications[0]['id'], new_status, user_id)
+    assert result['status'] == "You must provide a non-empty new status."
 
 
 def test__apply(test_teardown):
@@ -48,11 +49,11 @@ def test__apply(test_teardown):
     assert len(no_applications) == 0
 
     resume = "/resumes/resume.pdf"
-    apply_internal(user_id, job_id, resume)
+    apply_internal(user_id, job_id, resume, comment)
 
     new_job_id = 5
     assert new_job_id != job_id
-    apply_internal(user_id, new_job_id, resume)
+    apply_internal(user_id, new_job_id, resume, comment)
 
     applications_by_job = get_applications_internal(new_job_id, 'job')
     applications_by_user = get_applications_internal(user_id, 'user')
@@ -75,8 +76,8 @@ def test__update_status(test_teardown):
     new_status = "new!"
 
     # We create an application in the DB
-    applications = apply_internal(user_id, job_id, resume)
-    updated_applications = update_status_internal(applications[0]['id'], new_status, user_id)
+    applications = apply_internal(user_id, job_id, resume, comment)
+    updated_applications = update_status(applications[0]['id'], new_status, user_id)
 
     assert applications[0]['status'] != new_status
     assert updated_applications[0]['status'] == new_status
@@ -90,7 +91,7 @@ def test__withdraw(test_teardown):
     user_id = "someid456"
 
     # We create an application in the DB
-    applications = apply_internal(user_id, job_id, resume)
+    applications = apply_internal(user_id, job_id, resume, comment)
     applications_by_user = get_applications_internal(user_id, 'user')
     assert len(applications_by_user) == 1
 

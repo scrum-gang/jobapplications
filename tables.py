@@ -9,6 +9,7 @@ class Application(db.Model):
     is_inhouse_posting = db.Column(db.Boolean)
     status = db.Column(db.String(256))
     resume = db.Column(db.String(256))
+    comment = db.Column(db.String(256))
 
     inhouse = db.relationship("Inhouse", backref="applications", lazy=True)
     external = db.relationship("External", backref="applications", lazy=True)

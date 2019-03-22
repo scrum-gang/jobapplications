@@ -28,3 +28,38 @@ def get_application_by_id(application_id, user_id):
                                 .first()
     full_application_data = {key: app_data.to_dict()[key] if key in app_data.to_dict() else type_data.to_dict()[key] for key in app_data.to_dict().keys() ^ type_data.to_dict().keys()}
     return full_application_data
+
+
+def update_comment(application_id, new_comment, user_id):
+    """
+    Updates a comment to an application
+    """
+    if not application_id or not new_comment:
+        return {"status": "Please provide an application ID and a new comment!"}
+    if not user_id:
+        return {"status": "Please make sure you are authenticated."}
+
+    application = Application.query.filter_by(id=application_id, user_id=user_id).first()
+    if not application:
+        return {"status": "Application not found!"}
+    
+    application.comment = new_comment
+    user_applications = Application.query.filter_by(user_id=application.user_id).all()
+    return [application.to_dict() for application in user_applications]
+
+
+def update_status(application_id, new_status, user_id):
+    """
+    Updates the status of a user for a given job application
+
+    Arguments:
+    application_id: ID of the application
+    new_status: New status of the user for that application
+    """
+    if not new_status:
+        return {"status": "You must provide a non-empty new status."}
+
+    application = Application.query.filter_by(id=application_id, user_id=user_id).first()
+    application.status = new_status
+    user_applications = Application.query.filter_by(user_id=application.user_id).all()
+    return [application.to_dict() for application in user_applications]

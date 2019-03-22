@@ -4,10 +4,12 @@ import os
 import sys
 
 sys.path.insert(0, os.getcwd())
-from external import apply_external, update_status_external, get_applications_external, withdraw_application_external
+from applications import update_status
+from external import apply_external, get_applications_external, withdraw_application_external
 
 user_id = "someid123"
 resume = "/potato/IamAPotato"
+comment = ""
 url, position, company = "url.com", "potato", "poutine factory"
 date_posted, deadline = str(datetime.now()), str(datetime.now())
 
@@ -19,7 +21,7 @@ def test__apply_with_missing_info(test_teardown):
     user_id = "someid456"
     url, position, company = "", "", ""
 
-    result = apply_external(user_id, url, position, company, resume, date_posted, deadline)
+    result = apply_external(user_id, url, position, company, resume, date_posted, deadline, comment)
     assert result['status'] == "You must provide a job URL, position and company."
 
 
@@ -30,12 +32,12 @@ def test__update_status_empty_string(test_teardown):
 
     # We create an application in the DB
     applications = apply_external(user_id, url, position, company, resume,
-                                  date_posted, deadline)
+                                  date_posted, deadline, comment)
 
     # We update the status of this application
     new_status = ""
 
-    result = update_status_external(applications[0]['id'], new_status, user_id)
+    result = update_status(applications[0]['id'], new_status, user_id)
     assert result['status'] == "You must provide a non-empty new status."
 
 
@@ -45,7 +47,7 @@ def test__apply(test_teardown):
     """
     
     # We create an application in the DB
-    apply_external(user_id, url, position, company, resume, date_posted, deadline)
+    apply_external(user_id, url, position, company, resume, date_posted, deadline, comment)
     applications = get_applications_external(user_id)
 
     assert len(applications) == 1
@@ -66,8 +68,8 @@ def test__update_status(test_teardown):
 
     # We create an application in the DB
     applications = apply_external(user_id, url, position, company, resume,
-                                  date_posted, deadline)
-    updated_applications = update_status_external(applications[0]['id'], new_status, user_id)
+                                  date_posted, deadline, comment)
+    updated_applications = update_status(applications[0]['id'], new_status, user_id)
 
     assert applications[0]['status'] != new_status
     assert updated_applications[0]['status'] == new_status
@@ -78,7 +80,7 @@ def test__withdraw(test_teardown):
     """
     Basic test for removing applications
     """
-    apply_external(user_id, url, position, company, resume, date_posted, deadline)
+    apply_external(user_id, url, position, company, resume, date_posted, deadline, comment)
     applications = get_applications_external(user_id)
     assert len(applications) == 1
 
