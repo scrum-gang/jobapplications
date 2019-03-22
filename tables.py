@@ -25,7 +25,7 @@ class Inhouse(db.Model):
     __tablename__ = "inhouse"
     id = db.Column(db.Integer, primary_key=True)
     application_id = db.Column(db.Integer, db.ForeignKey('applications.id'))
-    job_id = db.Column(db.Integer)
+    job_id = db.Column(db.String(256))
 
     def __repr__(self):
         return '<Inhouse Application %r>' % self.id
