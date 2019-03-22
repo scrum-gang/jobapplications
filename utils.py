@@ -32,6 +32,7 @@ def validate_authentication(auth_headers, admin=False):
 
     auth_token = auth_headers['Authorization']
     response = query_auth(auth_token)
+    print("Response", response)
 
     # If the token is not verified, it is invalid by default
     if 'verified' not in response:
@@ -48,7 +49,7 @@ def query_auth(auth_token):
     """
     Simple wrapper around auth API, re-used in other parts of the code.
     """
-    headers = {'content-type': 'application/json', 'Authorization': f"Bearer {auth_token}"}
+    headers = {'content-type': 'application/json', 'Authorization': f"{auth_token}"}
     url = f"{auth_base_url}/users/self"
     print("Headers", headers, "url", url)
 
