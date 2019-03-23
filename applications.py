@@ -63,3 +63,26 @@ def update_status(application_id, new_status, user_id):
     application.status = new_status
     user_applications = Application.query.filter_by(user_id=application.user_id).all()
     return [application.to_dict() for application in user_applications]
+
+
+def withdraw_application(application_id, user_id):
+    """
+    Deletes a user's application.
+    """
+    if not application_id:
+        return {"status": "No application ID provided."}
+
+    application = Application.query.filter_by(id=application_id, user_id=user_id).first()
+
+    if application.is_inhouse_posting:
+        specific_application = Inhouse.query.filter_by(application_id=application_id).first()
+    else:
+        specific_application = External.query.filter_by(application_id=application_id).first()
+
+    if not application:
+        return {"status": "No application found."}
+
+    db.session.delete(specific_application)
+    db.session.delete(application)
+    db.session.commit()
+    return {"status": "success"}

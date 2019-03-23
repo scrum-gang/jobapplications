@@ -4,8 +4,8 @@ import os
 import sys
 
 sys.path.insert(0, os.getcwd())
-from applications import update_status
-from external import apply_external, get_applications_external, withdraw_application_external
+from applications import update_status, withdraw_application
+from external import apply_external, get_applications_external
 
 user_id = "someid123"
 resume = "/potato/IamAPotato"
@@ -85,6 +85,6 @@ def test__withdraw(test_teardown):
     assert len(applications) == 1
 
     # We delete the application
-    withdraw_application_external(applications[0]['application_id'], user_id)
+    withdraw_application(applications[0]['application_id'], user_id)
     applications = get_applications_external(user_id)
     assert len(applications) == 0

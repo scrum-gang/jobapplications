@@ -3,11 +3,11 @@ from sqlalchemy import create_engine
 
 from flask_cors import CORS, cross_origin
 
-from external import apply_external, get_applications_external, withdraw_application_external
-from internal import apply_internal, get_applications_internal, withdraw_application_internal
+from applications import get_application_by_id, update_comment, update_status, withdraw_application
+from external import apply_external, get_applications_external
+from internal import apply_internal, get_applications_internal
 from interview import add_interview_question, get_interview_questions, update_interview_question
 
-from applications import get_application_by_id, update_comment, update_status
 from tables import Application
 from utils import app, validate_authentication, query_auth
 
@@ -243,11 +243,11 @@ def get_interview_questions_endpoint(application_id):
   return jsonify(get_interview_questions(application_id, user_id))
 
 
-@app.route('/withdraw/internal', methods=['DELETE'])
+@app.route('/withdraw', methods=['DELETE'])
 @cross_origin(origin='*',headers=['Authorization', 'Content-Type'])
 def withdraw_internal_application_endpoint():
   """
-  Withdraws an application to an internal posting
+  Withdraws an application to a given job posting
 
   Request body:
   - `id`: Job application ID
@@ -264,31 +264,7 @@ def withdraw_internal_application_endpoint():
   application_id = content['id']
   user_id = query_auth(headers['Authorization'])['_id']
 
-  return jsonify(withdraw_application_internal(application_id, user_id))
-
-
-@app.route('/withdraw/external', methods=['DELETE'])
-@cross_origin(origin='*',headers=['Authorization', 'Content-Type'])
-def withdraw_external_application_endpoint():
-  """
-  Withdraws an application to an external posting
-
-  Request body:
-  - `id`: Job application ID
-  """
-  content = request.json
-  headers = request.headers
-
-  if not validate_authentication(headers):
-    return jsonify({"status": auth_error})
-
-  if 'id' not in content:
-    return jsonify(missing_application_id_error)
-
-  application_id = content.get('id', '')
-  user_id = query_auth(headers['Authorization'])['_id']
-
-  return jsonify(withdraw_application_external(application_id, user_id))
+  return jsonify(withdraw_application(application_id, user_id))
 
 
 if __name__ == '__main__':
