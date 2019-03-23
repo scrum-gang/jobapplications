@@ -23,7 +23,7 @@ def apply_internal(user_id, job_id, resume, comment):
     for application in Application.query.filter_by(user_id=user_id):
         inhouse = Inhouse.query.filter_by(application_id=application.id, job_id=job_id).first()
         if inhouse:
-            return [{"status": f"Already found an application for job ID {job_id} for the user {user_id}"}]
+            return {"status": f"Already found an application for this job for the user {user_id}"}
     generic_application = Application(date=str(datetime.now()), user_id=user_id, is_inhouse_posting=True,
                                       status="Applied", resume=resume, comment=comment)
     db.session.add(generic_application)
