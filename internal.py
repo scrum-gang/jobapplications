@@ -18,8 +18,10 @@ def apply_internal(user_id, job_id, resume, comment):
     """
     if not user_id:
         return {"status": "Please double check your authentication token, no user ID found."}
-    if not resume or not job_id:
-        return {"status": "Please enter a resume name and a valid job id."}
+    if not resume:
+        return {"status": "Please enter a resume!"}
+    if not job_id:
+        return {"status": "Please make sure you are applying to a job with a non-null ID!"}
     for application in Application.query.filter_by(user_id=user_id):
         inhouse = Inhouse.query.filter_by(application_id=application.id, job_id=job_id).first()
         if inhouse:

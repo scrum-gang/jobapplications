@@ -21,7 +21,7 @@ def test__apply_with_missing_info(test_teardown):
     """
     resume = ""
     result = apply_internal(user_id, job_id, resume, comment)
-    assert result['status'] == "Please enter a resume name and a valid job id."
+    assert result['status'] == "Please enter a resume!"
 
 
 def test__update_status_empty_string(test_teardown):
