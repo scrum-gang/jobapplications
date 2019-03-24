@@ -1,0 +1,9 @@
+[run]
+include = 
+        ./applications.py
+        ./internal.py
+        ./external.py
+        ./interview.py
+        ./tables.py
+        ./utils.py
+omit = ./tests

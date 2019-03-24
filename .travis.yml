@@ -7,4 +7,4 @@ install: pip install -r requirements.txt
 before_script:
   - psql -c 'create database jobapplications;' -U postgres
   - python setup.py
-script: pytest tests/
+script: pytest --cov --cov-config=.coveragerc tests/

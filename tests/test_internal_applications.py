@@ -51,7 +51,7 @@ def test__apply(test_teardown):
     resume = "/resumes/resume.pdf"
     apply_internal(user_id, job_id, resume, comment)
 
-    new_job_id = 5
+    new_job_id = "5"
     assert new_job_id != job_id
     apply_internal(user_id, new_job_id, resume, comment)
 
@@ -62,7 +62,7 @@ def test__apply(test_teardown):
     assert len(applications_by_job) == 1
     assert applications_by_user[0]['is_inhouse_posting'] and applications_by_job[0]['is_inhouse_posting']
     assert applications_by_user[0]['resume'] == applications_by_job[0]['resume'] == resume
-    assert applications_by_user[0]['job_id'] == int(job_id)
+    assert applications_by_user[0]['job_id'] == job_id
     assert applications_by_user[0]['job_id'] != applications_by_job[0]['job_id']
     assert applications_by_user[0]['user_id'] == applications_by_job[0]['user_id'] == user_id
     assert applications_by_user[0]['application_id'] >= 0
