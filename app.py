@@ -126,7 +126,7 @@ def update_status_internal_endpoint():
   if not application:
     return jsonify(application_not_found_error)
 
-  if not validate_authentication(headers, admin=application.is_inhouse_posting):
+  if not validate_authentication(headers):
     return jsonify({"status": auth_error_admin})
 
   user_id = query_auth(headers['Authorization'])['_id']
