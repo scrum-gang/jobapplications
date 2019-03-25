@@ -45,6 +45,12 @@ Returns applications by `APPLICATION ID`
 #### Sample Response
 Same as the previous, just queried differently!
 
+### `GET` to `/applications/exists?url=<url>`
+Finds whether an application exists for a given user, based on a URL.
+#### Sample Response
+```
+{"status": true}
+```
 ## Update
 ### `PUT` to `/update/status`
 #### Body
