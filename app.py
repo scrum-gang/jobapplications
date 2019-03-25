@@ -228,9 +228,9 @@ def get_application(application_id):
   return jsonify(get_application_by_id(application_id, user_id))
 
 
-@app.route('/applications/exists/<url>')
+@app.route('/applications/exists')
 @cross_origin(origin='*',headers=['Authorization', 'Content-Type'])
-def check_if_application_exists(url):
+def check_if_application_exists():
   """
   Created at the request of Camilo, simply returns whether an application
   exists or not given a URL and an authentication token.
@@ -241,6 +241,9 @@ def check_if_application_exists(url):
     return jsonify({"status": auth_error})
 
   user_id = query_auth(headers['Authorization'])['_id']
+  url = request.args.get('url')
+  if not url:
+    return jsonify({"status": False})
   applications = Application.query.filter_by(user_id=user_id).all()
   for application in applications:
     external_application = External.query.filter_by(application_id=application.id, url=url).first()
