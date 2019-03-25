@@ -8,7 +8,7 @@ from external import apply_external, get_applications_external
 from internal import apply_internal, get_applications_internal
 from interview import add_interview_question, get_interview_questions, update_interview_question
 
-from tables import Application
+from tables import Application, External
 from utils import app, validate_authentication, query_auth
 
 CORS(app)
@@ -213,7 +213,7 @@ def get_application_by_job_endpoint(job_id):
   return jsonify(get_applications_internal(job_id, 'job'))
 
 
-@app.route('/applications/<application_id>')
+@app.route('/applications/<int:application_id>')
 @cross_origin(origin='*',headers=['Authorization', 'Content-Type'])
 def get_application(application_id):
   """
@@ -226,6 +226,27 @@ def get_application(application_id):
 
   user_id = query_auth(headers['Authorization'])['_id']
   return jsonify(get_application_by_id(application_id, user_id))
+
+
+@app.route('/applications/exists/<url>')
+@cross_origin(origin='*',headers=['Authorization', 'Content-Type'])
+def check_if_application_exists(url):
+  """
+  Created at the request of Camilo, simply returns whether an application
+  exists or not given a URL and an authentication token.
+  """
+  headers = request.headers
+
+  if not validate_authentication(headers):
+    return jsonify({"status": auth_error})
+
+  user_id = query_auth(headers['Authorization'])['_id']
+  applications = Application.query.filter_by(user_id=user_id).all()
+  for application in applications:
+    external_application = External.query.filter_by(application_id=application.id, url=url).first()
+    if external_application:
+      return jsonify({"status": True})
+  return jsonify({"status": False})
 
 
 @app.route('/interview/question/<int:application_id>')
